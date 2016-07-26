@@ -15,32 +15,16 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.conf.urls import url, include
-from apirest import views
-from rest_framework import routers
+from django.views.generic import TemplateView
 
-# Wire up our API using automatic URL routing.
-# Additionally, we include login URLs for the browsable API.
-# router = routers.DefaultRouter()
-# router.register(r'users', views.UserViewSet)
-# router.register(r'groups', views.GroupViewSet)
-# router.register(r'tasks', views.TaskViewSet, base_name='tasks')
-# router.register(r'env_sensors/humidity', views.Humidity, base_name='env_sensors')
-# router.register(r'env_sensors/temperature', views.Temperature,
-#                 base_name='env_sensors')
-# router.register(r'env_sensors/temperature_from_humidity', views.TemperatureFromHumidity,
-#                 base_name='env_sensors')
-# router.register(r'env_sensors/temperature_from_pressure', views.TemperatureFromPressure,
-#                 base_name='env_sensors')
-# router.register(r'env_sensors/pressure', views.Pressure,
-#                 base_name='env_sensors')
-
+# Snippet para servir ficheros estáticos en modo debug
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    # url(r'^api/v1/', include(router.urls)),
     url(r'^api/v1/', include('apirest.urls')),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^docs/', include('rest_framework_docs.urls')),
-]
-
-
+    url(r'^dashboard/', include('dashboard.urls')),
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+
+{% block extra-css %}
+     <link rel="stylesheet" href="{% static "dashboard/css/led_matrix.css" %}">
+{%  endblock extra-css %}
+
+{% block content %}
+
+    <div id="target" class="led">Demo Element </div>
+    <div id="display">Another Demo</div>
+{#    <svg>#}
+{#    <svg>#}
+    <svg height="100" width="100">
+        <circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red" class="led" />
+    </svg
+
+    <div id="led_matrix">
+        <object id="svgObject" type="image/svg+xml" data="{% static "dashboard/imgs/sense_hat_plano2.svg" %}" border="3">
+            Kiwi Logo <!-- fallback image in CSS -->
+        </object>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"></script>
+    <script>
+        $(function () {
+        $('.led').click(function(event) {
+            var output = "User click on: " + event.pageX + "/" + event.pageY;
+            $('#display').text(output);
+        });
+        });
+
+        window.onload=function() {
+            var svgDoc = $('#svgObject')[0].contentDocument; // Get the document object for the SVG
+            $('.led', svgDoc).click(function(event){
+                var output = "User click on: " + event.pageX + "/" + event.pageY;
+                $('#display').text(output);
+                $(this, svgDoc).css('fill','blue');
+            })
+            var svgDocOptimizado = $('#svgObjectOptimizado')[0].contentDocument; // Get the document object for the SVG
+            $('.led', svgDocOptimizado).click(function(event){
+                var output = "User click on: " + event.pageX + "/" + event.pageY;
+                $('#display').text(output);
+                var color ='blue';
+                $(this, svgDocOptimizado).css('fill', color);
+                var x = $(this).x;
+                var y = $(this).y;
+                pixelOn(x, y, color);
+            })
+        };
+
+    </script>
+
+
+{#    <div id="here_table">#}
+{#    <table>#}
+{#          <tr><td>result1</td></tr>#}
+{#          <tr><td>result2</td></tr>#}
+{#          <tr><td>result3</td></tr>#}
+{#    </table>#}
+{#    </div>#}
+
+
+{#    <div id="led_matrix" class="dotmatrix">#}
+{#            <div id="dot11" data-xcoor="1" data-ycoor="1" class="dot"></div>#}
+{#            <div id="dot12" data-xcoor="2" data-ycoor="1" class="dot"></div>#}
+{#            <div id="dot13" data-xcoor="3" data-ycoor="1" class="dot"></div>#}
+{#            <div id="dot14" data-xcoor="4" data-ycoor="1" class="dot"></div>#}
+{#            <div id="dot15" data-xcoor="5" data-ycoor="1" class="dot"></div>#}
+{#            <div id="dot16" data-xcoor="6" data-ycoor="1" class="dot"></div>#}
+{#            <div id="dot17" data-xcoor="7" data-ycoor="1" class="dot"></div>#}
+{#            <div id="dot18" data-xcoor="8" data-ycoor="1" class="dot"></div>#}
+{#            <div id="dot21" data-xcoor="2" data-ycoor="2" class="dot"></div>#}
+{#            <div id="dot21" data-xcoor="2" data-ycoor="2" class="dot"></div>#}
+{#            <div id="dot11" data-xcoor="1" data-ycoor="1" class="dot"></div>#}
+{#            <div id="dot12" data-xcoor="2" data-ycoor="1" class="dot"></div>#}
+{#            <div id="dot13" data-xcoor="3" data-ycoor="1" class="dot"></div>#}
+{#            <div id="dot14" data-xcoor="4" data-ycoor="1" class="dot"></div>#}
+{#            <div id="dot15" data-xcoor="5" data-ycoor="1" class="dot"></div>#}
+{#            <div id="dot16" data-xcoor="6" data-ycoor="1" class="dot"></div>#}
+{#            <div id="dot17" data-xcoor="7" data-ycoor="1" class="dot"></div>#}
+{#            <div id="dot18" data-xcoor="8" data-ycoor="1" class="dot"></div>#}
+{#            <div id="dot21" data-xcoor="2" data-ycoor="2" class="dot"></div>#}
+{#            <div id="dot21" data-xcoor="2" data-ycoor="2" class="dot"></div>#}
+{#    </div>#}
+{##}
+{#     <table class="table table-bordered">#}
+{#    <thead>#}
+{#      <tr>#}
+{#        <th>Firstname</th>#}
+{#        <th>Lastname</th>#}
+{#        <th>Email</th>#}
+{#      </tr>#}
+{#    </thead>#}
+{#    <tbody>#}
+{#      <tr>#}
+{#        <td>John</td>#}
+{#        <td>Doe</td>#}
+{#        <td>john@example.com</td>#}
+{#      </tr>#}
+{#      <tr>#}
+{#        <td>Mary</td>#}
+{#        <td>Moe</td>#}
+{#        <td>mary@example.com</td>#}
+{#      </tr>#}
+{#      <tr>#}
+{#        <td>July</td>#}
+{#        <td>Dooley</td>#}
+{#        <td>july@example.com</td>#}
+{#      </tr>#}
+{#    </tbody>#}
+{#  </table>#}
+
+{#     <script>#}
+{#        var table = $('<table></table>').addClass('foo');#}
+{#        for(i=0; i<; i++){#}
+{#            var row = $('<tr></tr>').addClass('bar').text('result ' + i);#}
+{#            table.append(row);#}
+{#        }#}
+{#        $('#here_table').append(table);#}
+{# </script>#}
+{% endblock content %}

@@ -31,7 +31,7 @@ class MyRouter(routers.DefaultRouter):
             url=r'^{prefix}/{lookup}{trailing_slash}$',
             mapping={
                 'get': 'retrieve',
-                'put': 'update',
+                'put': 'update_element',
                 'patch': 'partial_update',
                 'delete': 'destroy'
             },

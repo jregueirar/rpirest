@@ -38,8 +38,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'corsheaders',
     'django_extensions',
-    'rest_framework_docs'
+    'rest_framework_docs',
+    'dashboard'
 ]
 
 REST_FRAMEWORK = {
@@ -56,7 +58,9 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
+
 
 ROOT_URLCONF = 'pirest-sense-hat.urls'
 
@@ -123,8 +127,29 @@ USE_L10N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.9/howto/static-files/
+#########################################################################
+#                                                                       #
+#                           STATIC SETTINGS                             #
+#                                                                       #
+#########################################################################
+PROJECT_ROOT = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+STATIC_ROOT = os.path.join(PROJECT_ROOT, 'collected_static')
 
 STATIC_URL = '/static/'
+
+
+
+#########################################################################
+#                                                                       #
+#                           LOCAL SETTINGS                              #
+#                                                                       #
+#########################################################################
+try:
+    SETTINGS_LOCAL
+except NameError:
+    try:
+        from settings_local import *
+    except ImportError:
+        pass
+
+

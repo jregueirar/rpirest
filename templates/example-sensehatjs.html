@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1> Example using jQuery RPIJS plugin with Sensehat Rest Api </h1>
+<h2>Sense Environments: </h2>
+<ul>
+    <li><b>Temperature:</b> <span id="temperature"></span>&deg;C</li>
+    <li><b>Pressure:</b> <span id="pressure"></span></li>
+    <li><b>Humidity:</b> <span id="humidity"></span>%</li>
+</ul>
+
+<h2> LED MATRIX </h2>
+
+    <form role="form">
+        <div class="form-group">
+            Coordenada X: 
+	    <input type="number" name="x" min="0" max="7" id="pixel_coord_x" value="0"><br>
+            Coordenada Y: 
+	    <input type="number" name="y" min="0" max="7" id="pixel_coord_y" value="0"><br>
+	    Color: 
+	    <input type="color" name="pixel_color" value="#0000FF" id="pixel_color">
+        </div>
+        <div>
+            <button type="button" class="btn" id="get_pixel">Get Pixel</button>
+            <button type="button" class="btn" id="set_pixel">Set Pixel</button>
+        </div>
+    </form>
+
+<script>
+	
+$(function(){
+	/* Initialize rpijs */
+	$.rpijs.init("../api/v1/", "admin", "admin");
+
+	/*var options = {
+		update: 1000,
+		rate: false,
+        	format: [{
+        		key: ["Temperature"],
+        		rate: false,
+        		valueType: "value",
+			decimals: 4
+        	}]
+		}; 
+        */
+
+	/* change formatDefaults */ 
+	$.rpijs.formatDefaults.valueType = "binary";
+	$.rpijs.formatDefaults.update = 2000; 
+	
+	/* Set environment sensors values */
+	$.rpijs.get("env_sensors/humidity", function(data) {
+		//console.log("DEBUG. Humidity: " +  data.output.Humidity.toFixed(options.format[0].decimals));
+		$("#humidity").html(data.output.Humidity.toFixed(2));
+		return true; 
+	});
+
+	$.rpijs.get("env_sensors/temperature", function(data) {
+		$("#temperature").html(data.output.Temperature.toFixed(2));
+		return true;
+	});
+
+	$.rpijs.get("env_sensors/pressure", function(data) {
+		$("#pressure").html(data.output.Pressure.toFixed(2));
+		return true;
+	});
+	
+	$('#get_pixel').click(function() {
+                console.log("Click");
+                $.getJSON('http://192.168.1.8:8000/api/v1/led_matrix/pixel/3,0', function(pixel){
+                    console.log("Success" + pixel);
+                    $('#pixel_color').val(pixel.output.r + ", " + pixel.output.g + ", " + pixel.output.b);
+                })
+                .fail(function(){
+                    console.log("Error")
+                })
+            })
+	
+
+	$('#set_pixel').click(function() {
+		console.log("Click set_pixel"); 
+		console.log($('#pixel_color').val()); 
+		var data={
+    		"x": $('#pixel_coord_x').val(),
+    		"y": $('input[name="y"]').val(),
+    		"r": 0,
+    		"g": 255,
+    		"b": 0
+		}   
+		$.rpijs.put("led_matrix/pixel/", data, function() {
+			console.log("Set Pixel Callback Done"); 
+		}); 
+   });
+}); 
+</script>
+{% endblock content %}
