@@ -25,6 +25,10 @@ class XYSerializer(serializers.Serializer):
     x = serializers.IntegerField(min_value=0, max_value=7);
     y = serializers.IntegerField(min_value=0, max_value=7);
 
+class ColorSerializer(serializers.Serializer):
+    r = serializers.IntegerField(min_value=0, max_value=255);
+    g = serializers.IntegerField(min_value=0, max_value=255);
+    b = serializers.IntegerField(min_value=0, max_value=255);
 
 class PixelSerializer(XYSerializer):
     r = serializers.IntegerField(min_value=0, max_value=255);

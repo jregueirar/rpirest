@@ -28,8 +28,8 @@ class HumidityView(viewsets.ViewSet):
     def list(self, request):
         result = sense.get_humidity()
 
-        response={'input': None}
-        response['output'] = {'Humidity': result}
+        response={'url': None}
+        response['Humidity'] = result
         return Response(response)
 
 
@@ -43,8 +43,8 @@ class TemperatureView(viewsets.ViewSet):
     def list(self, request):
         result = sense.get_temperature_from_humidity()
 
-        response={'input': None}
-        response['output'] = {'Temperature': result}
+        response={'url': None}
+        response['Temperature'] = result
         return Response(response)
 
 
@@ -58,8 +58,8 @@ class TemperatureFromHumidityView(viewsets.ViewSet):
     def list(self, request):
         result = sense.get_temperature_from_humidity()
 
-        response={'input': None}
-        response['output'] = {'Temperature': result}
+        response={'url': None}
+        response['Temperature'] = result
         return Response(response)
 
 
@@ -71,8 +71,8 @@ class TemperatureFromPressureView(viewsets.ViewSet):
     def list(self, request):
         result = sense.get_temperature_from_pressure()
 
-        response={'input': None}
-        response['output'] = {'Temperature': result}
+        response={'url': None}
+        response['Temperature'] = result
         return Response(response)
 
 
@@ -86,8 +86,8 @@ class PressureView(viewsets.ViewSet):
     def list(self, request):
         result = sense.get_pressure()
 
-        response={'input': None}
-        response['output'] = {'Pressure': result}
+        response={'url': None}
+        response['Pressure'] = result
         return Response(response)
 
 
@@ -95,21 +95,26 @@ class PixelView(viewsets.ViewSet):
     """
         Set/Get the color of an individual LED matrix pixel at the specified X-Y coordinate.
     """
-    serializer_class = PixelSerializer
+    serializer_class = ColorSerializer
     lookup_value_regex = '[0-7],[0-7]'
 
     def list(self, request):
-
+        self.serializer_class = PixelSerializer
         serializer = XYSerializer(data=request.data)
         if serializer.is_valid():
             coordinate = serializer.data
             color = sense.get_pixel(coordinate['x'], coordinate['y'])
-            output = {'x': coordinate['x'],
-                        'y': coordinate['y'],
+            pixel = {}
+            pixel['color'] = {
                         'r': color[0],
                         'g': color[1],
-                        'b': color[2]}
-            return Response({'output': output})
+                        'b': color[2]
+                        }
+            pixel['coord'] = {
+                'x': coordinate['x'],
+                'y': coordinate['y']
+            }
+            return Response({'pixel': pixel})
         errors=serializer.errors
         errors['URL'] = "Prueba con"
         return Response(errors)
@@ -119,18 +124,35 @@ class PixelView(viewsets.ViewSet):
         Function: sense_hat.set_pixel
     """
     def update(self, request, pk=None):
-        serializer = PixelSerializer(data=request.data)
+
+        serializer=PixelSerializer(data=request.data)
         if serializer.is_valid():
             sense.set_pixel(serializer.data['x'],
                             serializer.data['y'],
                             serializer.data['r'],
                             serializer.data['g'],
                             serializer.data['b'])
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def update_element(self, request, pk=None):
-        return self.update(request, pk)
+        x, y = pk.split(sep=",")
+        serializer = XYSerializer(data={'x': int(x), 'y': int(y)})
+        serializer.is_valid(raise_exception=True)
+
+        request.data['x'] = int(x)
+        request.data['y'] = int(y)
+        serializer=PixelSerializer(data=request.data)
+        if serializer.is_valid():
+            sense.set_pixel(serializer.data['x'],
+                            serializer.data['y'],
+                            serializer.data['r'],
+                            serializer.data['g'],
+                            serializer.data['b'])
+            response={'update_element': "YES"};
+            serializer.data['url'] = None
+            return Response(serializer, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def retrieve(self, request, pk=None):
         print ("Retrieve")
@@ -140,12 +162,16 @@ class PixelView(viewsets.ViewSet):
             if serializer.is_valid():
                 data = serializer.data
                 color = sense.get_pixel(data['x'], data['y'])
-                output = {'x':data['x'], 'y': data['y'],
-                                       'r': color[0], 'g': color[1],
-                                       'b': color[2]}
-
-                response = {'output': output}
-                response['input'] = {'x': int(x), 'y': int(y)}
+                response = {};
+                response['pixel'] = {
+                                    'color': {
+                                        'r': color[0],
+                                        'g': color[1],
+                                        'b': color[2]
+                                        },
+                                    'coord': {'x': int(x), 'y': int(y)}
+                                    }
+                response['url'] = None
                 return Response(response, status=status.HTTP_200_OK)
 
         return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -162,7 +188,7 @@ class PixelView(viewsets.ViewSet):
 
 class PixelsView(viewsets.ViewSet):
     lookup_value_regex = '[0-7],[0-7]'
-
+    serializer_class = ColorSerializer
 
     def get_queryset(self):
         pixel_list = sense.get_pixels()
@@ -186,23 +212,35 @@ class PixelsView(viewsets.ViewSet):
     #    return Response(serializer.data)
 
     def list(self, request):
+        self.serializer_class=None
+
         pixel_list = sense.get_pixels()
         return Response({"pixel_list": pixel_list})
 
     def retrieve(self, request, pk=None):
-        x, y = pk.split(sep=",")
-        serializer = XYSerializer(data={'x': int(x), 'y': int(y)})
-        if serializer.is_valid():
-            data = serializer.data
-            color = sense.get_pixel(data['x'], data['y'])
-            serializer_response = {'x':data['x'], 'y': data['y'],
-                                   'r': color[0], 'g': color[1],
-                                   'b': color[2]}
-            return Response(serializer_response, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        print ("Retrieve")
+        if pk is not None:
+            x, y = pk.split(sep=",")
+            serializer = XYSerializer(data={'x': int(x), 'y': int(y)})
+            if serializer.is_valid():
+                data = serializer.data
+                color = sense.get_pixel(data['x'], data['y'])
+                response = {};
+                response['pixel'] = {
+                                    'color': {
+                                        'r': color[0],
+                                        'g': color[1],
+                                        'b': color[2]
+                                        },
+                                    'coord': {'x': int(x), 'y': int(y)}
+                                    }
+                response['url'] = None
+                return Response(response, status=status.HTTP_200_OK)
 
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def update(self, request, pk=None):
+        self.serializer_class = None
 
         pixel_list = request.data['pixel_list']
         i=0
@@ -226,24 +264,26 @@ class PixelsView(viewsets.ViewSet):
         Function: sense_hat.set_pixel
     """
     def update_element(self, request, pk=None):
-        self.serializer_class = PixelSerializer
+        self.serializer_class = ColorSerializer;
 
-        serializer = PixelSerializer(data=request.data)
+        x, y = pk.split(sep=",")
+        serializer = XYSerializer(data={'x': int(x), 'y': int(y)})
+        serializer.is_valid(raise_exception=True)
+
+        request.data['x'] = int(x)
+        request.data['y'] = int(y)
+        serializer=PixelSerializer(data=request.data)
         if serializer.is_valid():
             sense.set_pixel(serializer.data['x'],
                             serializer.data['y'],
                             serializer.data['r'],
                             serializer.data['g'],
                             serializer.data['b'])
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            response={'update_element': "YES"};
+            serializer.data['url'] = None
+            return Response(serializer, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    # def create(self, request):
-    #     serializer = PixelSerializer(data=request.data)
-    #     if serializer.is_valid():
-    #         data = serializer.data
-    #         sense.set_pixel(data['x'], data['y'], data['r'], data['g'], data['b'])
-    #         return Response(serializer.data, status=status.HTTP_200_OK)
-    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class UserViewSet(viewsets.ModelViewSet):

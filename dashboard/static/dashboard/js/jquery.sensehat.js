@@ -1,88 +1,28 @@
 /**
  * Created by jonas on 1/07/16.
- * Original source code: jquery-rpijs.js (https://github.com/matematik7/rpi-dashboard)
+ * 
  */
-
-/* start fragment */
-/* Source: https://gist.github.com/chicagoworks/754454 */
-jQuery.extend({
-    stringify  : function stringify(obj) {         
-        if ("JSON" in window) {
-            return JSON.stringify(obj);
-        }
-
-        var t = typeof (obj);
-        if (t != "object" || obj === null) {
-            // simple data type
-            if (t == "string") obj = '"' + obj + '"';
-
-            return String(obj);
-        } else {
-            // recurse array or object
-            var n, v, json = [], arr = (obj && obj.constructor == Array);
-
-            for (n in obj) {
-                v = obj[n];
-                t = typeof(v);
-                if (obj.hasOwnProperty(n)) {
-                    if (t == "string") {
-                        v = '"' + v + '"';
-                    } else if (t == "object" && v !== null){
-                        v = jQuery.stringify(v);
-                    }
-
-                    json.push((arr ? "" : '"' + n + '":') + String(v));
-                }
-            }
-
-            return (arr ? "[" : "{") + String(json) + (arr ? "]" : "}");
-        }
-    }
-});
-/* end fragment */
 
 (function ($, undefined) {
 	
 	$.sensehat = {};
 
-	/* initialize REST api details */
-	$.sensehat.init = function(apiUrl, username, password) {
-		$.sensehat.apiUrl = apiUrl;
-		$.sensehat.username = username;
-		$.sensehat.password = password;
-	};
+	$.sensehat.hexToRgb = function(hex) {
+    		var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    		return result ? {
+        		r: parseInt(result[1], 16),
+        		g: parseInt(result[2], 16),
+        		b: parseInt(result[3], 16)
+    		} : null;
+	}
 
-	$.sensehat.get = function(name, callback, options) {
-		var settings = $.extend({}, $.sensehat.defaults, options);
+	function componentToHex(c) {
+    		var hex = c.toString(16);
+    		return hex.length == 1 ? "0" + hex : hex;
+	}
 
-	  	if (settings.rate) {
-	   		getRate(name, callback, options);
-	    		return;
-	  	}
-
-		$.ajax({
-	  		url: $.sensehat.apiUrl + name,
-	    	headers: {
-			Authorization: authString()
-	    	}
-		}).done(function(object) {
-	    		var ret = callback(parse(object, name, options));
-	    
-	    		if (ret && settings.update != 0) {
-				setTimeout(function() {
-		    		$.sensehat.get(name, callback, options);
-				}, settings.update);
-	    		}
-		});
-	};
-
-	$.sensehat.put = function(name, data, callback) {
-		return $.ajax({
-			type: "PUT",
-			url: $.sensehat.apiUrl + name,
-			data: $.stringify(data),
-			dataType: "json"
-		}).done(callback); 
-	};
+	$.sensehat.rgbToHex = function(r, g, b) {
+    		return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+	}
 
 }(jQuery));
