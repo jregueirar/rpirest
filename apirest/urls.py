@@ -60,9 +60,19 @@ router.register(r'env_sensors/temperature_from_pressure', views.TemperatureFromP
                 base_name='temperature_from pressure'),
 router.register(r'env_sensors/pressure', views.PressureView,
                 base_name='pressure')
+
+router.register(r'led_matrix/rotation', views.RotationView,
+                base_name='rotation')
+router.register(r'led_matrix/flip_h', views.FlipHView,
+                base_name='flip_h')
+router.register(r'led_matrix/flip_v', views.FlipVView,
+                base_name='flip_v')
 router.register(r'led_matrix/pixels', views.PixelsView,
                 base_name='pixels')
-router.register(r'led_matrix/pixel', views.PixelView, base_name='pixel')
+router.register(r'led_matrix/load_image', views.LoadImageView,
+                base_name='load_image')
+router.register(r'led_matrix/clear', views.ClearView,
+                base_name='clear')
 
 urlpatterns = [
     url(r'^', include(router.urls)),

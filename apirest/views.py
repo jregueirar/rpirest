@@ -5,6 +5,10 @@ from rest_framework.decorators import detail_route, list_route
 from sense_hat import SenseHat
 from rest_framework.views import APIView
 from rest_framework.reverse import reverse
+from django.core.files.storage import default_storage as storage
+from .utils import save_uploaded_file_to_disk
+
+
 
 sense = SenseHat()
 
@@ -18,9 +22,76 @@ class APIRoot(APIView):
             'foo': reverse('PixelView', request=request)
         })
 
+###########
+# LED MATRIX
+###########
+# RESPONSE FORMAT: http://labs.omniti.com/labs/jsend/wiki
+class RotationView(viewsets.ViewSet):
+    """
+    If you're using the Pi upside down or sideways you can use this function to correct the orientation of the image being shown.
+    """
+    serializer_class = AngleSerializer
 
-#@list_route(methods=['post', 'delete'])
-#Prueba.
+    def update(self, request, pk=None):
+        serializer = AngleSerializer(data=request.data)
+        if serializer.is_valid():
+            sense.set_rotation(serializer.data['angle'], serializer.data['redraw'])
+            response = {}
+            response['status'] = "success"
+            response['data'] = serializer.data
+            return Response(response, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class FlipHView(viewsets.ViewSet):
+    serializer_class = RedrawSerializer
+
+    def update(self, request, pk=None):
+        serializer = RedrawSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            response = {'status': 'success'}
+            response['data'] = {'pixel_list': sense.flip_h(serializer.data['redraw'])}
+            return Response(response, status=status.HTTP_200_OK)
+
+
+# ¿Ponemos en data el atributo redraw?
+class FlipVView(viewsets.ViewSet):
+    serializer_class = RedrawSerializer
+
+    def update(self, request, pk=None):
+        serializer = RedrawSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            response = {'status': 'success'}
+            response['data'] = {'pixel_list': sense.flip_v(serializer.data['redraw'])}
+            return Response(response, status=status.HTTP_200_OK)
+
+
+class ClearView(viewsets.ViewSet):
+    serializer_class = ColorSerializer
+
+    def update(self, request, pk=None):
+        serializer = ColorSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            sense.clear(serializer.data['r'], serializer.data['g'], serializer.data['b'])
+            response = {'status': 'success'}
+            response['data'] = serializer.data
+            return Response(response, status=status.HTTP_200_OK)
+
+
+
+class LoadImageView(viewsets.ViewSet):
+    serializer_class = ImageSerializer
+
+
+    def update(self, request, pk=None):
+        serializer = ImageSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            path = save_uploaded_file_to_disk("/tmp/img.png", request.FILES['img'])
+            response = {'status': 'success'}
+            response['data'] = {'pixel_list': sense.load_image(path)}
+            return Response(response, status=status.HTTP_200_OK)
+
 class HumidityView(viewsets.ViewSet):
     """
     Gets the current temperature in degrees Celsius from the humidity sensor.
@@ -86,7 +157,7 @@ class PressureView(viewsets.ViewSet):
     def list(self, request):
         result = sense.get_pressure()
 
-        response={'url': None}
+        response={'url': request.path}
         response['Pressure'] = result
         return Response(response)
 
@@ -132,7 +203,7 @@ class PixelView(viewsets.ViewSet):
                             serializer.data['r'],
                             serializer.data['g'],
                             serializer.data['b'])
-            return Response(serializer, status=status.HTTP_200_OK)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def update_element(self, request, pk=None):
@@ -151,7 +222,7 @@ class PixelView(viewsets.ViewSet):
                             serializer.data['b'])
             response={'update_element': "YES"};
             serializer.data['url'] = None
-            return Response(serializer, status=status.HTTP_200_OK)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def retrieve(self, request, pk=None):
@@ -281,7 +352,7 @@ class PixelsView(viewsets.ViewSet):
                             serializer.data['b'])
             response={'update_element': "YES"};
             serializer.data['url'] = None
-            return Response(serializer, status=status.HTTP_200_OK)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

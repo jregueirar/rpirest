@@ -22,27 +22,32 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class XYSerializer(serializers.Serializer):
-    x = serializers.IntegerField(min_value=0, max_value=7);
-    y = serializers.IntegerField(min_value=0, max_value=7);
+    x = serializers.IntegerField(min_value=0, max_value=7)
+    y = serializers.IntegerField(min_value=0, max_value=7)
+
 
 class ColorSerializer(serializers.Serializer):
-    r = serializers.IntegerField(min_value=0, max_value=255);
-    g = serializers.IntegerField(min_value=0, max_value=255);
-    b = serializers.IntegerField(min_value=0, max_value=255);
+    r = serializers.IntegerField(min_value=0, max_value=255, default=0)
+    g = serializers.IntegerField(min_value=0, max_value=255, default=0)
+    b = serializers.IntegerField(min_value=0, max_value=255, default=0)
+
 
 class PixelSerializer(XYSerializer):
-    r = serializers.IntegerField(min_value=0, max_value=255);
-    g = serializers.IntegerField(min_value=0, max_value=255);
-    b = serializers.IntegerField(min_value=0, max_value=255);
+    r = serializers.IntegerField(min_value=0, max_value=255, default=0)
+    g = serializers.IntegerField(min_value=0, max_value=255, default=0)
+    b = serializers.IntegerField(min_value=0, max_value=255, default=0)
 
     class Meta:
         model = Pixel
         fields = ('url', 'x', 'y', 'r', 'g', 'b')
-    #def create(self, validated_data):
-    #    return Pixel(id=None, **validated_data)
 
-    # def update(self, instance, validated_data):
-    #     for field, value in validated_data.items():
-    #         setattr(instance, field, value)
-    #     return instance
 
+class RedrawSerializer(serializers.Serializer):
+    redraw = serializers.BooleanField(default=True)
+
+
+class AngleSerializer(RedrawSerializer):
+    angle = serializers.ChoiceField(choices=[0, 90, 180, 270])
+
+class ImageSerializer(RedrawSerializer):
+    img = serializers.ImageField()
