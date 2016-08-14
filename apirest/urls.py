@@ -49,8 +49,8 @@ class MyRouter(routers.DefaultRouter):
 
 
 router = MyRouter()
-router.register(r'users', views.UserViewSet)
-router.register(r'groups', views.GroupViewSet)
+# router.register(r'users', views.UserViewSet)
+# router.register(r'groups', views.GroupViewSet)
 router.register(r'env_sensors/humidity', views.HumidityView, base_name='humidity')
 router.register(r'env_sensors/temperature', views.TemperatureView,
                 base_name='temperature')
@@ -73,6 +73,16 @@ router.register(r'led_matrix/load_image', views.LoadImageView,
                 base_name='load_image')
 router.register(r'led_matrix/clear', views.ClearView,
                 base_name='clear')
+router.register(r'led_matrix/show_message', views.ShowMessageView,
+                base_name='show_message')
+router.register(r'led_matrix/show_letter', views.ShowLetterView,
+                base_name='show_letter')
+router.register(r'led_matrix/low_light', views.LowLightView,
+                base_name='low_light')
+router.register(r'led_matrix/gamma', views.GammaView,
+                base_name='gamma')
+
+
 
 urlpatterns = [
     url(r'^', include(router.urls)),

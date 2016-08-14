@@ -66,20 +66,6 @@ class FlipVView(viewsets.ViewSet):
             return Response(response, status=status.HTTP_200_OK)
 
 
-class ClearView(viewsets.ViewSet):
-    serializer_class = ColorSerializer
-
-    def update(self, request, pk=None):
-        serializer = ColorSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            sense.clear(serializer.data['r'], serializer.data['g'], serializer.data['b'])
-            response = {'status': 'success'}
-            response['data'] = serializer.data
-            return Response(response, status=status.HTTP_200_OK)
-
-
-
 class LoadImageView(viewsets.ViewSet):
     serializer_class = ImageSerializer
 
@@ -91,6 +77,113 @@ class LoadImageView(viewsets.ViewSet):
             response = {'status': 'success'}
             response['data'] = {'pixel_list': sense.load_image(path)}
             return Response(response, status=status.HTTP_200_OK)
+
+
+class ClearView(viewsets.ViewSet):
+    serializer_class = ColorSerializer
+
+    def update(self, request, pk=None):
+        serializer = ColorSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            sense.clear(serializer.data['r'], serializer.data['g'], serializer.data['b'])
+            response = {'status': 'success'}
+            response['data'] = serializer.data
+            return Response(response, status=status.HTTP_200_OK)
+
+
+class ShowMessageView(viewsets.ViewSet):
+    """
+    Scrolls a text message from right to left across the LED matrix and at
+    the specified speed, in the specified colour and background colour.
+    """
+    serializer_class = MessageSerializer
+
+    def update(self, request, pk=None):
+        serializer = MessageSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            sense.show_message(request.data['text_string'],
+                                scroll_speed=serializer.data['scroll_speed'],
+                                text_colour=serializer.data['text_colour'],
+                                back_colour=serializer.data['back_colour']
+                                )
+            response = {'status': 'success'}
+            response['url'] = request.path   # FIXME ¿Redundante? ¿Lo dejamos?
+            response['data'] = serializer.data
+            return Response(response, status=status.HTTP_200_OK)
+
+class ShowLetterView(viewsets.ViewSet):
+    serializer_class = LetterSerializer
+
+    def update(self, request, pk=None):
+        serializer = LetterSerializer(data=request.data)
+        print(request.data)
+        if serializer.is_valid(raise_exception=True):
+            print(serializer.validated_data)
+            #FIXME Waiting to finish the schroll :-(
+            sense.show_letter(serializer.validated_data['letter'],
+                              text_colour=serializer.data['text_colour'],
+                              back_colour=serializer.validated_data['back_colour']
+                              )
+            response = {'status': 'success'}
+            response['url'] = request.path   # FIXME ¿Redundante? ¿Lo dejamos?
+            response['data'] = serializer.data
+            return Response(response, status=status.HTTP_200_OK)
+
+class LowLightView(viewsets.ViewSet):
+    """
+    Toggles the LED matrix low light mode,
+    useful if the Sense HAT is being used in a dark environment.
+    """
+    serializer_class = LowLightSerializer
+
+    def update(self, request, pk=None):
+        self.serializer_class = LowLightSerializer
+        serializer = LowLightSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            sense.low_light = serializer.data['low_light']
+            response = {'status': 'success'}
+            response['url'] = request.path   # FIXME ¿Redundante? ¿Lo dejamos?
+            response['data'] = serializer.data
+            return Response(response, status=status.HTTP_200_OK)
+
+
+class GammaView(viewsets.ViewSet):
+    """
+    For advanced users. Most users will just need the low_light Boolean property
+    above. The Sense HAT python API uses 8 bit (0 to 255) colours for R, G, B.
+    When these are written to the Linux frame buffer they're bit shifted into RGB 5 6 5.
+    The driver then converts them to RGB 5 5 5 before it passes them over to the
+    ATTiny88 AVR for writing to the LEDs.
+
+    The gamma property allows you to specify a gamma lookup table for the final 5 bits
+    of colour used. The lookup table is a list of 32 numbers that must be between 0 and 31.
+    The value of the incoming 5 bit colour is used to index the lookup table and the value
+    found at that position is then written to the LEDs.
+    """
+
+    def list(self, request):
+
+        response={'url': request.path}
+        response['status']='success'
+        response['data'] = {'gamma_tuple': sense.gamma}
+        return Response(response)
+
+    def update(self, request, pk=None):
+        serializer = GammaSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            sense.gamma = serializer.data['gamma_tuple']
+            response = {'status': 'success'}
+            response['url'] = request.path   # FIXME ¿Redundante? ¿Lo dejamos?
+            response['data'] = serializer.data
+            return Response(response, status=status.HTTP_200_OK)
+
+    def delete(self, request, pk=None):
+        sense.gamma_reset()
+        response = {'status': 'success'}
+        response['url'] = request.path
+        response['data'] = {'gamma_tuple': sense.gamma}
+        return Response(response)
+
 
 class HumidityView(viewsets.ViewSet):
     """
@@ -114,7 +207,8 @@ class TemperatureView(viewsets.ViewSet):
     def list(self, request):
         result = sense.get_temperature_from_humidity()
 
-        response={'url': None}
+        response={'url': request.path}
+        response['status']="success"
         response['Temperature'] = result
         return Response(response)
 
@@ -257,6 +351,7 @@ class PixelView(viewsets.ViewSet):
         # data.add({"tutua":'probando'})
         return data
 
+
 class PixelsView(viewsets.ViewSet):
     lookup_value_regex = '[0-7],[0-7]'
     serializer_class = ColorSerializer
@@ -310,9 +405,12 @@ class PixelsView(viewsets.ViewSet):
 
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
+
     def update(self, request, pk=None):
         self.serializer_class = None
 
+        # TODO Check validation
+        serializer = PixelSerializer(data=request.data, many=True)
         pixel_list = request.data['pixel_list']
         i=0
         for pixel in pixel_list:
