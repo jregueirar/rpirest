@@ -75,3 +75,9 @@ class LowLightSerializer(serializers.Serializer):
 
 class GammaSerializer(serializers.Serializer):
     gamma_tuple = serializers.ListField(child=serializers.IntegerField(min_value=0, max_value=255), default=[255,255,255])
+
+class ImuConfigSerializer(serializers.Serializer):
+    compass_enabled = serializers.BooleanField()
+    gyro_enabled = serializers.BooleanField()
+    accel_enabled = serializers.BooleanField()
+

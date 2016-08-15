@@ -81,6 +81,27 @@ router.register(r'led_matrix/low_light', views.LowLightView,
                 base_name='low_light')
 router.register(r'led_matrix/gamma', views.GammaView,
                 base_name='gamma')
+router.register(r'imu_sensor/imu_config', views.ImuConfigView,
+                base_name='imu_config')
+router.register(r'imu_sensor/orientation_radians', views.OrientationRadiansView,
+                base_name='orientation_radians')
+router.register(r'imu_sensor/orientation_degrees', views.OrientationDegreesView,
+                base_name='orientation_degrees')
+router.register(r'imu_sensor/orientation', views.OrientationDegreesView,
+                base_name='orientation')
+router.register(r'imu_sensor/compass', views.CompassView,
+                base_name='compass')
+router.register(r'imu_sensor/compass_raw', views.CompassRawView,
+                base_name='compass_raw')
+router.register(r'imu_sensor/gyroscope', views.GyroscopeView,
+                base_name='gyroscope')
+router.register(r'imu_sensor/gyroscope_raw', views.GyroscopeRawView,
+                base_name='gyroscope_raw')
+router.register(r'imu_sensor/accelerometer', views.AccelerometerView,
+                base_name='accelerometer')
+router.register(r'imu_sensor/accelerometer_raw', views.AccelerometerRawView,
+                base_name='accelerometer_raw')
+
 
 
 

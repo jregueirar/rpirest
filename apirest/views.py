@@ -454,6 +454,119 @@ class PixelsView(viewsets.ViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class ImuConfigView(viewsets.ViewSet):
+    """
+    Enables and disables the gyroscope, accelerometer and/or magnetometer
+    contribution to the get orientation functions below.
+    """
+    serializer_class = ImuConfigSerializer
+
+    def update(self, request, pk=None):
+        serializer=ImuConfigSerializer(data=request.data)
+        if serializer.is_valid():
+            sense.set_imu_config(
+                serializer.data['compass_enabled'],
+                serializer.data['gyro_enabled'],
+                serializer.data['accel_enabled']
+                )
+            response={'status': 'success'}
+            response['path'] = request.path
+            response['data'] = serializer.data
+            return Response(response, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class OrientationRadiansView(viewsets.ViewSet):
+    """
+    Gets the current orientation in radians using the aircraft principal axes
+    of pitch, roll and yaw.
+    """
+    def list(self, request, pk=None):
+        response={'status': 'success'}
+        response['url'] = request.path
+        response['data'] = sense.get_orientation_radians()
+        return Response(response)
+
+
+class OrientationDegreesView(viewsets.ViewSet):
+    """
+    Gets the current orientation in degrees using the aircraft principal axes
+    of pitch, roll and yaw.
+    """
+    def list(self, request, pk=None):
+        response={'status': 'success'}
+        response['url'] = request.path
+        response['data'] = sense.get_orientation_degrees()
+        return Response(response)
+
+
+class CompassView(viewsets.ViewSet):
+    """
+    Calls set_imu_config to disable the gyroscope and accelerometer then gets
+    the direction of North from the magnetometer in degrees.
+    """
+    def list(self, request, pk=None):
+        response={'status': 'success'}
+        response['url'] = request.path
+        response['data'] = sense.get_compass()
+        return Response(response)
+
+
+class CompassRawView(viewsets.ViewSet):
+    """
+    Gets the raw x, y and z axis magnetometer data.
+    """
+    def list(self, request, pk=None):
+        response={'status': 'success'}
+        response['url'] = request.path
+        response['data'] = sense.get_compass_raw()
+        return Response(response)
+
+
+class GyroscopeView(viewsets.ViewSet):
+    """
+    Calls set_imu_config to disable the magnetometer and accelerometer then
+    gets the current orientation from the gyroscope only.
+    """
+    def list(self, request, pk=None):
+        response={'status': 'success'}
+        response['url'] = request.path
+        response['data'] = sense.get_gyroscope()
+        return Response(response)
+
+class GyroscopeRawView(viewsets.ViewSet):
+    """
+    Gets the raw x, y and z axis gyroscope data.
+    """
+    def list(self, request, pk=None):
+        response={'status': 'success'}
+        response['url'] = request.path
+        response['data'] = sense.get_gyroscope_raw()
+        return Response(response)
+
+
+class AccelerometerView(viewsets.ViewSet):
+    """
+    Calls set_imu_config to disable the magnetometer and gyroscope
+    then gets the current orientation from the accelerometer only.
+    """
+    def list(self, request, pk=None):
+        response={'status': 'success'}
+        response['url'] = request.path
+        response['data'] = sense.get_accelerometer()
+        return Response(response)
+
+
+class AccelerometerRawView(viewsets.ViewSet):
+    """
+    Gets the raw x, y and z axis accelerometer data.
+    """
+    def list(self, request, pk=None):
+        response={'status': 'success'}
+        response['url'] = request.path
+        response['data'] = sense.get_accelerometer_raw()
+        return Response(response)
+
 
 class UserViewSet(viewsets.ModelViewSet):
     """
