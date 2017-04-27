@@ -102,17 +102,8 @@ router.register(r'imu_sensor/accelerometer', views.AccelerometerView,
 router.register(r'imu_sensor/accelerometer_raw', views.AccelerometerRawView,
                 base_name='accelerometer_raw')
 
-
-
-
 urlpatterns = [
     url(r'^', include(router.urls)),
 ]
 
 
-#PixelViewSet = views.PixelViewSet.as_view({'get': 'retrieve'})
-# urlpatterns = [
-#       url(r'^$', views.APIRoot.as_view()),
-#       url(r'^led_matrix/pixel', views.PixelView.as_view(), name='pixel'),
-      # url(r'^led_matrix/pixel/(<x>[0-7],<y>[0-7])$', views.PixelView.as_view),
- # ]

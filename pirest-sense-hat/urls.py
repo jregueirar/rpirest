@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """rpisensehat_rest URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
@@ -25,6 +26,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^api/v1/', include('apirest.urls')),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    url(r'^docs/', include('rest_framework_docs.urls')),
+    #url(r'^docs/', include('rest_framework_docs.urls')),
     url(r'^dashboard/', include('dashboard.urls')),
+    url(r'^', include('dashboard.urls'))
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

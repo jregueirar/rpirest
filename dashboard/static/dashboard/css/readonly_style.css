@@ -1,0 +1,4 @@
+
+div.widget_type__adminreadonlyfield p { font-weight: bolder; font-size: 140%;}
+div.widget_type__adminreadonlyfield label {}
+div.widget_type__adminreadonlyfield p.help-block {display:none;}
