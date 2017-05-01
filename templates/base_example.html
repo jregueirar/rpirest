@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+{% load i18n %}
+<html lang="en">
+<head>
+    <title>Bootstrap Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    {% block extra-css %} {% endblock extra-css %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+    <script src="{% static "dashboard/js/utils.js" %}"></script>
+    <script src="{% static "dashboard/js/jquery.sensehat.js" %}"></script>
+    <script src="{% static "dashboard/js/jquery-rpijs.js" %}"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    {% block extra-head %} {% endblock extra-head %}
+</head>
+<body>
+    {% block content %} {%endblock content %}
+
+    <script>
+        var csrftoken = getCookie('csrftoken');
+        console.log("CSRFTOKEN");
+
+        function csrfSafeMethod(method) {
+            // these HTTP methods do not require CSRF protection
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        }
+        });
+    </script>
+    {% block extra-js %} {% endblock extra-js %}
+</body>
+</html>

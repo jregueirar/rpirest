@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_extensions',
     'rest_framework_docs',
-    'dashboard'
+    'dashboard',
+    'core'
 ]
 
 REST_FRAMEWORK = {
@@ -67,8 +68,7 @@ ROOT_URLCONF = 'pirest-sense-hat.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')]
-        ,
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -137,8 +137,9 @@ STATIC_ROOT = os.path.join(PROJECT_ROOT, 'collected_static')
 
 STATIC_URL = '/static/'
 
-
-
+# Built-IN Login System
+LOGIN_REDIRECT_URL = '/' # It means home view
+LOGOUT_REDIRECT_URL = '/'
 #########################################################################
 #                                                                       #
 #                           LOCAL SETTINGS                              #

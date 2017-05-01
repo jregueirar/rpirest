@@ -1,4 +1,4 @@
-{% extends "analitic_base.html" %}
+{% extends "base.html" %}
 
 {% load staticfiles %}
 
@@ -81,12 +81,12 @@
                 var output = "User click on: " + event.pageX + "/" + event.pageY;
                 $('#display').text(output);
             });
-            $.rpijs.init("../api/v1/", "admin", "admin");
+            $.rpijs.init("../api/v1/", "admin", "admin1234");
         });
 
         window.onload=function() {
 
-            $.rpijs.init("../api/v1/", "admin", "admin");
+            $.rpijs.init("../api/v1/", "admin", "admin1234");
 
             var svgDoc = $('#svgObject')[0].contentDocument; // Get the document object for the SVG
             $('.led', svgDoc).click(function(event){

@@ -1,0 +1,49 @@
+{% extends "dashboard/ull_base.html" %}
+{% load static permissions %}
+{% load bootstrap3%}
+
+{% block before_all_head %}
+  {% block head_specific_beginning %}
+  {% endblock %}
+  <link rel='stylesheet' type='text/css' href='{% static 'css/jquery-ui/smoothness/jquery-ui.css' %}' />
+  <style>
+    .form-group:not(.required) .control-label:after {
+        content:' (opcional)';
+        font-size: small;
+        color: gray;
+    }
+  </style>
+{% endblock %}
+
+{% block head_title %}ULL - Gestion de invitados y eventos WIFI{% endblock %}
+
+{% block head %}
+    <script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
+    <script type='text/javascript' src='{% static 'js/jquery-ui.js' %}'></script>
+    {% block head_specific_end %}
+    {% endblock %}
+{% endblock %}
+
+{% block title %} <a href="{% url "guest_list" %}">Gestion de invitados y eventos WIFI</a> {% endblock %}
+
+{% block navbar-right %}
+    {% include "menu_horizontal.html" %}
+{% endblock %}
+
+{% block base_body %}
+
+    <div class="col-sm-1"></div>
+
+        <div class="col-md-10">
+            <div class="row">
+                {% block wifiguest_content %}
+                {% endblock %}
+            </div>
+        </div>
+
+    <div class="col-sm-1"></div>
+
+    <div class="row"><br></div>
+    <div class="row"><br></div>
+
+{% endblock %}
