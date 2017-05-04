@@ -1,3 +1,10 @@
 - Support for DHT22 sensor
-- Improve designt logout. Example https://www.w3schools.com/icons/tryit.asp?filename=trybs_ref_glyph_log-out
-
+- Graphs of measurements of the sensors: locals
+- Send metrics to carbon
+- Alarms:
+  - Setting thresholds
+  - Send alarms to Nagios
+- Design:
+  - Improve design logout. Example https://www.w3schools.com/icons/tryit.asp?filename=trybs_ref_glyph_log-out
+  - Integrate Bowseable API with APP design
+  - Reinicializar led_matrix con los puntos como están en la placa

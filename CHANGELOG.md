@@ -1,7 +1,7 @@
+## 0.202 (2017-05-04)
 
-## 0.2 (2017-??)
-  - Improving the appearance. We start the design of the APP.
-  We copy the CSS template from
+Bugfixes:
+  - Fix HTMLs ids
 
 ## 0.201 (2017-05-01)
 
@@ -21,3 +21,8 @@ Others:
   - Refactoring template code
   - Reorganizing URLs
   - Upgrade from Django 1.9.6 to Django 1.11
+
+## 0.2 (2017-??)
+  - Improving the appearance. We start the design of the APP.
+  We copy the CSS template from
+
