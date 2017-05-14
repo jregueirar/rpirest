@@ -3,16 +3,13 @@ from rest_framework.response import Response
 from rest_framework import viewsets, status
 from apirest.serializers import *
 from rest_framework.decorators import detail_route, list_route
-from sense_hat import SenseHat
+#from sense_hat import SenseHat
 from rest_framework.views import APIView
 from rest_framework.reverse import reverse
 from django.core.files.storage import default_storage as storage
 from .utils import save_uploaded_file_to_disk
 
-
-
-sense = SenseHat()
-
+#sense = SenseHat()
 
 class APIRoot(APIView):
 

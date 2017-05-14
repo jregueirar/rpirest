@@ -1,5 +1,10 @@
 - Support for DHT22 sensor
 - Graphs of measurements of the sensors: locals
+  - apt-get install graphite-carbon
+  - dpkg -i https://github.com/fg2it/grafana-on-raspberry/releases/download/v4.1.0/grafana_4.1.0-1484083445_armhf.deb
+  - Bibliography:
+    - https://www.linode.com/docs/uptime/monitoring/deploy-graphite-with-grafana-on-ubuntu-14-04
+    - https://eyskens.me/carbon-graphite-grafana---on-a-raspberry-pi/
 - Send metrics to carbon
 - Alarms:
   - Setting thresholds
@@ -8,3 +13,6 @@
   - Improve design logout. Example https://www.w3schools.com/icons/tryit.asp?filename=trybs_ref_glyph_log-out
   - Integrate Bowseable API with APP design
   - Reinicializar led_matrix con los puntos como están en la placa
+- Deploy
+  - Entorno de desarrollo que no use las librerías sense-hat y staging y
+  prod sí . (Para poder desarrollar la parte gráfica)
