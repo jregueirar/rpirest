@@ -1,0 +1,1 @@
+- Please conform to the indentation style dictated in the .editorconfig file. You must use a text editor with EditorConfig support to avoid indentation and whitespace issues.
