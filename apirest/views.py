@@ -8,8 +8,15 @@ from rest_framework.views import APIView
 from rest_framework.reverse import reverse
 from django.core.files.storage import default_storage as storage
 from .utils import save_uploaded_file_to_disk
+from django.conf import settings
 
-#sense = SenseHat()
+if settings.SENSE_HAT:
+    try:
+        from sense_hat import SenseHat
+    except ImportError:
+        raise SystemExit('[ERROR] Please make sure sense_hat is installed properly')
+    sense = SenseHat()
+
 
 class APIRoot(APIView):
 

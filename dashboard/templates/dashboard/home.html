@@ -4,120 +4,136 @@
 {% load staticfiles %}
 
 {% block extra-css %}
-     <link rel="stylesheet" href="{% static "dashboard/css/led_matrix.css" %}">
+    <link rel="stylesheet" href="{% static "dashboard/css/led_matrix.css" %}">
+    <link rel="stylesheet" href="{% static "dashboard/css/dygraph.css" %}">
 {%  endblock extra-css %}
 
-{% block content_title %} Overview {% endblock content_title %}
+{% block js %}
+    {{ block.super }}
+    <script type="text/javascript" src="{% static "dashboard/js/dygraph.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "dashboard/js/jquery.graphite.js"%}"></script>
+    <script type="text/javascript" src="{% static "dashboard/js/d3.min.js"%}"></script>
+    <script type="text/javascript" src="{% static "dashboard/js/d3.v3.js"%}"></script>
+    <script type="text/javascript" src="{% static "dashboard/js/rickshaw.min.js"%}"></script>
+    <script type="text/javascript" src="{% static "dashboard/js/loader.js"%}"></script>
+
+    <script type="text/javascript" src="{% static "dashboard/js/home.js" %}"></script>
+    <script type="text/javascript">
+
+    </script>
+
+{% endblock js %}
+
+{% block content_title %} Sensor Ambiental: <a href="https://www.raspberrypi.org/products/sense-hat/"> Sense Hat</a>{% endblock content_title %}
 
 {% block menu_block %}
-    <a href="overview" class="w3-bar-item w3-button w3-padding w3-blue"><i class="fa fa-eye  fa-fw"></i>  Overview</a>
-    <a href="control_led_matrix" class="w3-bar-item w3-button w3-padding"><i class="fa fa-cubes fa-fw"></i> Control Led Matrix</a>
-    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-bullseye fa-fw"></i> SenseHat Env Sensors </a>
-    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-cog fa-fw"></i>  Settings</a><br><br>
-    <a href="api/v1" class="w3-bar-item w3-button w3-padding"><i class="fa fa-eye fa-fw"></i>  Browse API REST</a>
+    <a href="overview" class="w3-bar-item w3-button w3-padding w3-blue"><i class="fa fa-eye  fa-fw"></i>  Sensores Ambientales</a>
+    <a href="control_led_matrix" class="w3-bar-item w3-button w3-padding"><i class="fa fa-cubes fa-fw"></i> Matriz Led</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-bullseye fa-fw"></i> Sistema RPI</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-cog fa-fw"></i>  Configuración</a><br><br>
+    <a href="api/v1" class="w3-bar-item w3-button w3-padding"><i class="fa fa-eye fa-fw"></i> API REST</a>
 {%  endblock menu_block %}
 
 {% block content %}
     <div class="w3-row-padding w3-margin-bottom">
-        <div class="w3-third">
-            <div class="w3-container w3-red w3-padding-16">
-                <i class="fa fa-thermometer-three-quarters w3-xxxlarge"></i>
-                <div class="w3-right">
-                    <h3><span id="temperature"></span>ºC</h3>
-                </div>
-                <div class="w3-clear"></div>
-                <h4>Temperature</h4>
+        <div class="w3-half">
+            <div class="w3-container">
+                <div id="chart_gauge_env"> </div>
             </div>
         </div>
-        <div class="w3-third">
-            <div class="w3-container w3-blue w3-padding-16">
-                <i class="fa fa-thermometer-three-quarters w3-xxxlarge"></i>
-                <div class="w3-right">
-                    <h3><span id="humidity"></span>%</h3>
-                </div>
-                <div class="w3-clear"></div>
-                <h4>Humidity</h4>
-            </div>
-        </div>
-        <div class="w3-third">
-            <div class="w3-container w3-green w3-padding-16">
-                <i class="fa fa-compress w3-xxxlarge"></i>
-                <div class="w3-right">
-                    <h3><span id="pressure"></span>mbar</h3>
-                </div>
-                <div class="w3-clear"></div>
-                <h4>Pressure</h4>
+        <div class="w3-half">
+            <div class="w3-container ">
+                <div id="chart_temperature_realtime"></div>
             </div>
         </div>
     </div>
 
-    <div id="led_matrix">
-        <object id="svgObject" type="image/svg+xml" data="{% static "dashboard/imgs/sense_hat_plano2.svg" %}" border="3">
-            Kiwi Logo <!-- fallback image in CSS -->
-        </object>
+    <h2> GRAPHITE_LOCAL_URL: {{ GRAPHITE_LOCAL_URL }} </h2>
+    <h2> Dygraph </h2>
+    <div class="w3-row-padding w3-margin-bottom">
+        <div class="w3-half">
+            <div class="w3-container">
+                <div id="graph_temp"></div>
+            </div>
+        </div>
+        <div class="w3-half">
+            <div class="w3-container">
+                <div id="graph_humidity"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <h2> Ryckshaw </h2>
+    <div class="w3-row-padding w3-margin-bottom">
+        <div class="w3-row">
+            <div id="chart_container">
+		        <div id="rickshaw1"></div>
+		        <div id="timeline"></div>
+		        <div id="preview"></div>
+	        </div>
+        </div>
     </div>
 
     <script>
-        $(function () {
-            $('.led').click(function(event) {
-                var output = "User click on: " + event.pageX + "/" + event.pageY;
-                $('#display').text(output);
-            });
-            $.rpijs.init("../api/v1/", "admin", "admin");
-        });
-
-        window.onload=function() {
-
-            $.rpijs.init("../api/v1/", "admin", "admin");
-
-            var svgDoc = $('#svgObject')[0].contentDocument; // Get the document object for the SVG
-            $('.led', svgDoc).click(function(event){
-                var output = "User click on: " + event.pageX + "/" + event.pageY;
-                $('#display').text(output);
-                $(this, svgDoc).css('fill','blue');
-                var x =$(this, svgDoc).attr('x');
-                var y =$(this, svgDoc).attr('y');
-                var data={
-    		        "r": 0,
-    		        "g": 0,
-    		        "b": 255
-		        };
-		        var service_name = 'led_matrix/pixels/' + x + ',' + y + "/"
-		        $.rpijs.put(service_name, data, function() {
-			        console.log("Set Pixel Callback Done");
-		        });
-            });
-        };
-    </script>
-
-    <!-- Código javascript -->
-    <script>
-
-    $(function(){
-	    /* Initialize rpijs */
-	    $.rpijs.init("../api/v1/", "admin", "admin");
+    $(document).ready(function () {
+        // Temperature Realtime CHART
+        $.rpijs.init("{{ API_REST_URL }}", "admin", "admin1234");
 
 	    /* change formatDefaults */
 	    $.rpijs.formatDefaults.valueType = "binary";
 	    $.rpijs.formatDefaults.update = 2000;
 
-	    /* Set environment sensors values */
+        var data=[];
+        var g = new Dygraph(document.getElementById("chart_temperature_realtime"), data,
+                {
+                    drawPoints: true,
+                    showRoller: true,
+                    labels: ['t', 'Temperatura']
+                });
 
-	    $.rpijs.get("env_sensors/humidity", function(data) {
-		    $("#humidity").html(data.Humidity.toFixed(2));
+        $.rpijs.get("env_sensors/temperature", function(data) {
+            var x = new Date();
+            var y = data.Temperature.toFixed(2);
+            data.push([x,y]);
+            g.updateOptions({'file': data});
 		    return true;
-	    });
+        });
 
-	    $.rpijs.get("env_sensors/temperature", function(data) {
-		    $("#temperature").html(data.Temperature.toFixed(2));
-		    return true;
-	    });
+    //JSONP
+    url="{{ GRAPHITE_LOCAL_URL }}/render?target=env_sensor.sense_hat.temp&format=json&jsonp=?"
+    $.getJSON(url, function(response) {
+        var data = [];
+        for (i in response[0].datapoints) {
+            data.push([new Date(response[0].datapoints[i][1] * 1000), response[0].datapoints[i][0]]);
+        }
 
-	    $.rpijs.get("env_sensors/pressure", function(data) {
-		    $("#pressure").html(data.Pressure.toFixed(2));
-		    return true;
-	    });
+        new Dygraph(document.getElementById("graph_temp"),
+            data,
+            {
+                labels: [ "Fecha", "Temperatura" ],
+                legend: 'always',
+                showRangeSelector: true,
+                ylabel: 'Temperatura (ºC)',
+            });
+    });
 
+    url="{{ GRAPHITE_LOCAL_URL }}/render?target=env_sensor.sense_hat.humidity&format=json&jsonp=?"
+    $.getJSON(url, function(response) {
+            var data = [];
+            for (i in response[0].datapoints) {
+                data.push([new Date(response[0].datapoints[i][1] * 1000), response[0].datapoints[i][0]]);
+            }
+
+            new Dygraph(document.getElementById("graph_humidity"),
+              data,
+              {
+                  labels: [ "Date", "Humedad" ],
+                  legend: 'always',
+                  showRangeSelector: false,
+                  ylabel: 'Humedad(%)',
+              });
+        });
     });
     </script>
 
