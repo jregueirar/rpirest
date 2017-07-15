@@ -153,6 +153,24 @@ URL_LOCAL_GRAPHITE = "http://localhost:8080"
 DEBUG = True
 SENSE_HAT = True
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': '/var/log/info.log',
+        },
+    },
+    'loggers': {
+        'apirest': {
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}
 #########################################################################
 #                                                                       #
 #                           LOCAL SETTINGS                              #

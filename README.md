@@ -1,1 +1,4 @@
-TUTUA 2
+## Screenshots
+
+### Main Dashboard Page
+![tutua](screenshots/env_sensors.png)

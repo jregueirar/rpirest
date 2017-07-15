@@ -9,6 +9,7 @@ from rest_framework.reverse import reverse
 from django.core.files.storage import default_storage as storage
 from .utils import save_uploaded_file_to_disk
 from django.conf import settings
+import logging
 
 if settings.SENSE_HAT:
     try:
@@ -16,6 +17,9 @@ if settings.SENSE_HAT:
     except ImportError:
         raise SystemExit('[ERROR] Please make sure sense_hat is installed properly')
     sense = SenseHat()
+
+# Get an instance of a logger
+logger = logging.getLogger("apirest")
 
 
 class APIRoot(APIView):
@@ -215,6 +219,7 @@ class TemperatureView(viewsets.ViewSet):
         response={'url': request.path}
         response['status']="success"
         response['Temperature'] = result
+        logger.debug('TemperatureView: ' + str(result))
         return Response(response)
 
 

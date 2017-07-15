@@ -17,7 +17,7 @@
     <script type="text/javascript" src="{% static "dashboard/js/rickshaw.min.js"%}"></script>
     <script type="text/javascript" src="{% static "dashboard/js/loader.js"%}"></script>
 
-    <script type="text/javascript" src="{% static "dashboard/js/home.js" %}"></script>
+    <script type="text/javascript" src="{% static "dashboard/js/chart-gauge-sensor.js" %}"></script>
     <script type="text/javascript">
 
     </script>
@@ -35,10 +35,17 @@
 {%  endblock menu_block %}
 
 {% block content %}
+    <h2> Tiempo Real </h2>
     <div class="w3-row-padding w3-margin-bottom">
         <div class="w3-half">
-            <div class="w3-container">
-                <div id="chart_gauge_env"> </div>
+            <div class="w3-third">
+                <div id="chart_gauge_temp"> </div>
+            </div>
+            <div class="w3-third">
+                <div id="chart_gauge_humidity"> </div>
+            </div>
+            <div class="w3-third">
+                <div id="chart_gauge_pressure"> </div>
             </div>
         </div>
         <div class="w3-half">
@@ -48,8 +55,7 @@
         </div>
     </div>
 
-    <h2> GRAPHITE_LOCAL_URL: {{ GRAPHITE_LOCAL_URL }} </h2>
-    <h2> Dygraph </h2>
+    <h2> Histórico </h2>
     <div class="w3-row-padding w3-margin-bottom">
         <div class="w3-half">
             <div class="w3-container">
@@ -64,17 +70,6 @@
 
     </div>
 
-    <h2> Ryckshaw </h2>
-    <div class="w3-row-padding w3-margin-bottom">
-        <div class="w3-row">
-            <div id="chart_container">
-		        <div id="rickshaw1"></div>
-		        <div id="timeline"></div>
-		        <div id="preview"></div>
-	        </div>
-        </div>
-    </div>
-
     <script>
     $(document).ready(function () {
         // Temperature Realtime CHART
@@ -84,24 +79,27 @@
 	    $.rpijs.formatDefaults.valueType = "binary";
 	    $.rpijs.formatDefaults.update = 2000;
 
-        var data=[];
+        var data =[];
+        data.push([new Date(), 0])
         var g = new Dygraph(document.getElementById("chart_temperature_realtime"), data,
                 {
                     drawPoints: true,
-                    showRoller: true,
-                    labels: ['t', 'Temperatura']
+{#                    showRoller: true,#}
+                    labels: ['t', 'Temperatura'],
+                    legend: 'always',
+                    ylabel: 'Temperatura (ºC)',
                 });
 
-        $.rpijs.get("env_sensors/temperature", function(data) {
+        $.rpijs.get("env_sensors/temperature", function(metric) {
             var x = new Date();
-            var y = data.Temperature.toFixed(2);
+            var y = metric.Temperature.toFixed(2);
             data.push([x,y]);
             g.updateOptions({'file': data});
 		    return true;
         });
 
     //JSONP
-    url="{{ GRAPHITE_LOCAL_URL }}/render?target=env_sensor.sense_hat.temp&format=json&jsonp=?"
+    url="{{ GRAPHITE_LOCAL_URL }}/render?target=env_sensor.sense_hat.temperature&format=json&from=-1w&jsonp=?"
     $.getJSON(url, function(response) {
         var data = [];
         for (i in response[0].datapoints) {
@@ -118,7 +116,7 @@
             });
     });
 
-    url="{{ GRAPHITE_LOCAL_URL }}/render?target=env_sensor.sense_hat.humidity&format=json&jsonp=?"
+    url="{{ GRAPHITE_LOCAL_URL }}/render?target=env_sensor.sense_hat.humidity&format=json&from=-1w&jsonp=?"
     $.getJSON(url, function(response) {
             var data = [];
             for (i in response[0].datapoints) {
