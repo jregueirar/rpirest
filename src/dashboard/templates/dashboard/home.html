@@ -16,7 +16,6 @@
     <script type="text/javascript" src="{% static "dashboard/js/d3.v3.js"%}"></script>
     <script type="text/javascript" src="{% static "dashboard/js/rickshaw.min.js"%}"></script>
     <script type="text/javascript" src="{% static "dashboard/js/loader.js"%}"></script>
-
     <script type="text/javascript" src="{% static "dashboard/js/chart-gauge-sensor.js" %}"></script>
     <script type="text/javascript">
 
@@ -111,7 +110,7 @@
             {
                 labels: [ "Fecha", "Temperatura" ],
                 legend: 'always',
-                showRangeSelector: true,
+                showRangeSelector: false,
                 ylabel: 'Temperatura (ºC)',
             });
     });
