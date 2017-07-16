@@ -1,0 +1,9 @@
+---
+- name: Installing packages
+  action: apt name={{ item }} state=present 
+  with_items: 
+    - graphite-carbon
+    - graphite-web
+  tags: [package]
+
+

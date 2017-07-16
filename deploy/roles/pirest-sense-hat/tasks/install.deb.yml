@@ -1,0 +1,38 @@
+- name: Installing packages
+  action: apt name={{ item }} state=present
+  with_items:
+    - git
+    - python3-pip
+    - vim
+    - supervisor
+    - nginx
+    - python3-numpy
+  tags:
+    - package
+
+- name: Graphite | Installing packages
+  action: apt name={{ item }} state=present
+  with_items:
+    - graphite-carbon
+    - graphite-web
+  tags: [graphite]
+
+
+- name: Installing sense-hat package
+  action: apt name=sense-hat state=present
+  when: ansible_lsb.id == "Raspbian"
+
+- name: Syncronyzing pirest-sense-hat code
+  synchronize: src="{{ app_src }}" dest="{{ app_path }}"
+  tags:
+    - app_code
+  notify:
+    - django collect_static
+    - restart pirest-sense-hat
+    - django installtasks
+
+
+- name: Executing pip3 -r requirements.txt
+  pip:
+    requirements: "{{ app_path }}/requirements.txt"
+    executable: pip3

@@ -1,0 +1,17 @@
+---
+# vars file for pirest-sense-hat
+
+### APP Configuration
+app_name: "pirest-sense-hat"
+app_src: "../src/"
+# The path where pirest-sense-hat will be downloaded and installed.
+app_path: "/opt/pirest_sense_hat"
+app_statics: "{{ app_path }}/collect_statics"
+#virtualenv_path: "/opt/virtualenvs/{{ app_name }}"
+app_user: root
+app_port: 8000
+
+### NGINX Configuration
+nginx_remove_default_vhost: true
+nginx_sites_available: /etc/nginx/sites-available
+nginx_sites_enabled: /etc/nginx/sites-enabled
