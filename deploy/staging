@@ -1,0 +1,15 @@
+# Inventory file for staging environment
+
+[vagrant_machines]
+pirest01 ansible_host=192.168.4.10 graphite_local_url="http://rpi2:8080"
+rpi2	ansible_user=root
+
+[rpys]
+rpi3	ansible_user=pi
+
+[vagrant_machines:vars]
+ansible_user=vagrant
+ansible_ssh_pass=vagrant
+graphite_local_url="http://rpi2:8080"
+api_rest_url="http://rpi2/api/v1/"
+django_debug=True

@@ -1,0 +1,61 @@
+---
+
+- name: Include OS-specific variables.
+  include_vars: no-raspbian.yml
+  when: ansible_lsb.id != 'Raspbian'
+
+- name: Carbon | Configure carbon-cache storage schema
+  template:
+    src: templates/carbon-storage-schemas.conf.j2
+    dest: "{{ carbon_conf_path }}/storage-schemas.conf"
+    mode: 0664
+    owner: root
+    group: root
+
+- name: Graphite | Configure graphite-web
+  template:
+    src: templates/graphite-web-settings.py.j2
+    dest: "{{ graphite_conf_path}}/local_settings.py"
+    mode: 0664
+    owner: root
+    group: root
+
+- name: Supervisor | pirest-sense-hat config
+  template:
+    src: templates/supervisor.pirest_sense_hat.conf.j2
+    dest: /etc/supervisor/conf.d/pirest_sense_hat.conf
+    owner: "{{ app_user }}"
+    group: "{{ app_user }}"
+    mode: 0664
+    force: yes
+  notify: reread supervisor
+
+- name: Nginx | Setting site available {{ app_name }}
+  template:
+    src: templates/nginx.pirest_sense_hat.j2
+    dest: "{{nginx_sites_available}}/{{app_name}}"
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart nginx
+
+- name: Nginx | Enablin site {{ app_name }}
+  file: src={{nginx_sites_available}}/{{app_name}} dest={{nginx_sites_enabled}}/{{app_name}} state=link
+  notify: restart nginx
+
+- name: Django | Copy Django's settings_local for APP {{ app_name }}
+  template:
+    src: templates/settings_local.py.j2
+    dest: "{{ app_path }}/{{app_name}}/settings_local.py"
+    owner: "{{ app_user }}"
+    group: "{{ app_user }}"
+    mode: 0664
+    force: yes
+  notify: restart pirest-sense-hat
+
+- name: Django | Checking Static files for {{ app_name }}
+  file:
+    path: "{{ app_statics }}"
+    state: directory
+    mode: 0644
+  notify: django collect_static

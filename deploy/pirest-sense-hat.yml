@@ -1,0 +1,10 @@
+---
+- name: Apply configuration to all RPis
+  hosts: all
+  remote_user: pi
+  become: yes
+
+  roles:
+    - { role: geerlingguy.nginx, tags: [ 'nginx'] }
+    # - graphite
+    - pirest-sense-hat 
