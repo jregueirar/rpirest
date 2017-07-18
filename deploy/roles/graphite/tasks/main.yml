@@ -1,9 +1,0 @@
----
-# tasks file for graphite
-- debug: 
-    msg: "ansible_lsb.codename: {{ ansible_lsb.id }}"
-
-- include: install.deb.yml
-  when: ansible_os_family == 'Debian'
-  tags: [packages] 
-
