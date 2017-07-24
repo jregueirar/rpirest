@@ -14,12 +14,10 @@
     <script type="text/javascript" src="{% static "dashboard/js/jquery.graphite.js"%}"></script>
     <script type="text/javascript" src="{% static "dashboard/js/d3.min.js"%}"></script>
     <script type="text/javascript" src="{% static "dashboard/js/d3.v3.js"%}"></script>
-    <script type="text/javascript" src="{% static "dashboard/js/rickshaw.min.js"%}"></script>
     <script type="text/javascript" src="{% static "dashboard/js/loader.js"%}"></script>
     <script type="text/javascript" src="{% static "dashboard/js/chart-gauge-sensor.js" %}"></script>
-    <script type="text/javascript">
+    <script type="text/javascript" src="{% static "dashboard/js/sensors_line_charts.js" %}"></script>
 
-    </script>
 
 {% endblock js %}
 
@@ -48,8 +46,15 @@
             </div>
         </div>
         <div class="w3-half">
-            <div class="w3-container ">
-                <div id="chart_temperature_realtime"></div>
+            <div class="w3-container">
+                <b>Sensor:</b>
+                <select id="select_sensor">
+                    <option selected="" id="temperature">Temperatura</option>
+                    <option id="humidity">Humedad</option>
+                    <option id="pressure">Presión</option>
+                </select>
+                <div id="chart_realtime"></div>
+                <div id="chart_humidity"></div>
             </div>
         </div>
     </div>
@@ -66,72 +71,103 @@
                 <div id="graph_humidity"></div>
             </div>
         </div>
-
     </div>
-
     <script>
-    $(document).ready(function () {
-        // Temperature Realtime CHART
-        $.rpijs.init("{{ API_REST_URL }}", "admin", "admin1234");
+        $(document).ready(function () {
 
-	    /* change formatDefaults */
-	    $.rpijs.formatDefaults.valueType = "binary";
-	    $.rpijs.formatDefaults.update = 2000;
+            var selectSensor = document.getElementById("select_sensor");
 
-        var data =[];
-        data.push([new Date(), 0])
-        var g = new Dygraph(document.getElementById("chart_temperature_realtime"), data,
-                {
-                    drawPoints: true,
-{#                    showRoller: true,#}
-                    labels: ['t', 'Temperatura'],
-                    legend: 'always',
-                    ylabel: 'Temperatura (ºC)',
+            var chartsOptions= {
+                'temperature': {url: "env_sensors/temperature", labels: ['t', 'Temperatura'],
+                    ylabel: "Temperatura (ºC)", key: "Temperature"},
+                'humidity': {url: "env_sensors/humidity", labels: ['h', 'Humedad'],
+                    ylabel: "Humedad (%)", key: "Humidity"},
+                'pressure': {url: "env_sensors/pressure", labels: ['p', 'Presión'],
+                    ylabel: "Presión", key: "Pressure"}
+            };
+
+            {# Convertir esto en función en el espacio de nombres $.pirest-utils.#}
+            function realtimeSerialChart (chartName, elementId, chartsOptions) {
+
+                var data = [];
+                data.push([new Date(), 0])
+                var updateInterval = 2000;
+                var baseApiRest = "{{ API_REST_URL }}";
+
+
+                var url = baseApiRest + chartsOptions[chartName]['url'];
+                $.getJSON(url, function (result) {
+                            var y = result[chartsOptions[chartName]['key']].toFixed(2);
+                            data.push([new Date(), y]);
+                            return true;
                 });
 
-        $.rpijs.get("env_sensors/temperature", function(metric) {
-            var x = new Date();
-            var y = metric.Temperature.toFixed(2);
-            data.push([x,y]);
-            g.updateOptions({'file': data});
-		    return true;
-        });
 
-    //JSONP
-    url="{{ GRAPHITE_LOCAL_URL }}/render?target=env_sensor.sense_hat.temperature&format=json&from=-1w&jsonp=?"
-    $.getJSON(url, function(response) {
-        var data = [];
-        for (i in response[0].datapoints) {
-            data.push([new Date(response[0].datapoints[i][1] * 1000), response[0].datapoints[i][0]]);
-        }
+                var chartRealtime = new Dygraph(document.getElementById(elementId), data, {
+                    drawPoints: true,
+                    showRoller: false,
+                    labels: [chartsOptions[chartName]['labels'][0], chartsOptions[chartName]["labels"][1]],
+                    legend: 'always',
+                    ylabel:  chartsOptions[chartName]['ylabel']
+                });
 
-        new Dygraph(document.getElementById("graph_temp"),
-            data,
-            {
-                labels: [ "Fecha", "Temperatura" ],
-                legend: 'always',
-                showRangeSelector: false,
-                ylabel: 'Temperatura (ºC)',
-            });
-    });
-
-    url="{{ GRAPHITE_LOCAL_URL }}/render?target=env_sensor.sense_hat.humidity&format=json&from=-1w&jsonp=?"
-    $.getJSON(url, function(response) {
-            var data = [];
-            for (i in response[0].datapoints) {
-                data.push([new Date(response[0].datapoints[i][1] * 1000), response[0].datapoints[i][0]]);
+                return setInterval(function () {
+                    console.log("Plot ID: " + chartName);
+                    $.getJSON(url, function (result) {
+                        var x = new Date();
+                        var y = result[chartsOptions[chartName]['key']].toFixed(2);
+                        data.push([x, y]);
+                        chartRealtime.updateOptions({'file': data});
+                        return true;
+                    })
+                }, updateInterval);
             }
 
-            new Dygraph(document.getElementById("graph_humidity"),
-              data,
-              {
-                  labels: [ "Date", "Humedad" ],
-                  legend: 'always',
-                  showRangeSelector: false,
-                  ylabel: 'Humedad(%)',
-              });
-        });
-    });
-    </script>
+            var refreshId = realtimeSerialChart("temperature", "chart_realtime", chartsOptions);
 
+            selectSensor.onchange = function() {
+                var sel = selectSensor.selectedIndex;
+                var id = selectSensor.options[sel].id;
+
+                clearInterval(refreshId);
+                refreshId = realtimeSerialChart(id, "chart_realtime", chartsOptions);
+            };
+
+            // *************************** HISTORICO *******************************************************
+            //JSONP
+            url="{{ GRAPHITE_LOCAL_URL }}/render?target=env_sensor.sense_hat.temperature&format=json&from=-1w&jsonp=?"
+            $.getJSON(url, function(response) {
+                var data = [];
+                for (i in response[0].datapoints) {
+                    data.push([new Date(response[0].datapoints[i][1] * 1000), response[0].datapoints[i][0]]);
+                }
+
+                new Dygraph(document.getElementById("graph_temp"),
+                    data,
+                    {
+                        labels: [ "Fecha", "Temperatura" ],
+                        legend: 'always',
+                        showRangeSelector: false,
+                        ylabel: 'Temperatura (ºC)',
+                    });
+            });
+
+            url="{{ GRAPHITE_LOCAL_URL }}/render?target=env_sensor.sense_hat.humidity&format=json&from=-1w&jsonp=?"
+            $.getJSON(url, function(response) {
+                var data = [];
+                for (i in response[0].datapoints) {
+                    data.push([new Date(response[0].datapoints[i][1] * 1000), response[0].datapoints[i][0]]);
+                }
+
+                new Dygraph(document.getElementById("graph_humidity"),
+                    data,
+                    {
+                        labels: [ "Date", "Humedad" ],
+                        legend: 'always',
+                        showRangeSelector: false,
+                        ylabel: 'Humedad(%)',
+                    });
+            });
+        });
+    </script>
 {% endblock content %}

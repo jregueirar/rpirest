@@ -13,7 +13,7 @@
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
- * 
+ *
  *  https://github.com/matematik7/rpi-dashboard/blob/master/src/html/js/jquery-rpijs/jquery-rpijs.js
  */
 
@@ -21,7 +21,7 @@
 /* start fragment */
 /* Source: https://gist.github.com/chicagoworks/754454 */
 jQuery.extend({
-    stringify  : function stringify(obj) {         
+    stringify  : function stringify(obj) {
         if ("JSON" in window) {
             return JSON.stringify(obj);
         }
@@ -62,45 +62,45 @@ if (window.MozWebSocket) {
 }
 
 (function ($, undefined) {
-    
+
     $.rpijs = {};
-    
+
     $.rpijs.rates = {};
-    
+
     $.rpijs.defaults = {
         update: 2000,
         rate: false,
         format: []
     };
-    
+
     $.rpijs.formatDefaults = {
         key: [],
         rate: false,
         valueType: "none",
         decimals: 2
     };
-    
+
     /* initialize REST api details */
     $.rpijs.init = function(apiUrl, username, password) {
         $.rpijs.apiUrl = apiUrl;
         $.rpijs.username = username;
         $.rpijs.password = password;
     };
-    
+
     /* return authorization string */
     var authString = function() {
         return "Basic " + btoa($.rpijs.username + ":" + $.rpijs.password);
     };
-    
+
     /* get value according to specified options */
     $.rpijs.get = function(name, callback, options) {
         var settings = $.extend({}, $.rpijs.defaults, options);
-        
+
         if (settings.rate) {
             getRate(name, callback, options);
             return;
         }
-        
+
         $.ajax({
             url: $.rpijs.apiUrl + name,
             headers: {
@@ -108,7 +108,7 @@ if (window.MozWebSocket) {
             }
         }).done(function(object) {
             var ret = callback(parse(object, name, options));
-            
+
             if (ret && settings.update != 0) {
                 setTimeout(function() {
                     $.rpijs.get(name, callback, options);
@@ -116,7 +116,7 @@ if (window.MozWebSocket) {
             }
         });
     };
-    
+
     /* POST request to the REST api */
     $.rpijs.post = function(name, data, callback) {
         return $.ajax({
@@ -141,7 +141,7 @@ if (window.MozWebSocket) {
 	}).done(callback);
     };
 
-    
+
     /* initialize WebSocket connection */
     $.rpijs.websocket = function(name, callback) {
         if (window.WebSocket === undefined) {
@@ -163,29 +163,29 @@ if (window.MozWebSocket) {
         }
         return conn;
     };
-    
+
     /* Format all values specified in format option */
     var parse = function(objectArg, name, options) {
         var settings = $.extend({}, $.rpijs.defaults, options);
-        
+
         /* if only one value */
         if (typeof objectArg !== "object") {
             var formatSettings = $.extend({}, $.rpijs.formatDefaults, settings.format[0]);
-            
+
             /* calculate rate */
             if (typeof objectArg === "number" && formatSettings.rate) {
                 objectArg = (objectArg - $.rpijs.rates[name].object)/($.now() - $.rpijs.rates[name].time)*1000;
             }
-            
+
             return $.rpijs.parseNumber(objectArg, settings.format[0]);
         }
 
         /* make a copy of object for modification */
         var object = $.extend(true, {}, objectArg);
-        
+
         $.each(settings.format, function(index, formatOptions) {
             var formatSettings = $.extend({}, $.rpijs.formatDefaults, formatOptions);
-            
+
             /* get object owner of value and key */
             var value = object;
             var i;
@@ -193,23 +193,23 @@ if (window.MozWebSocket) {
                 value = value[formatSettings.key[i]];
             }
             var key = formatSettings.key[i];
-            
+
             /* calculate rate */
             if (typeof value[key] === "number" && formatSettings.rate) {
                 var oldValue = $.rpijs.rates[name].object;
                 $.each(formatSettings.key, function(index, key) {
                     oldValue = oldValue[key];
                 });
-                
+
                 value[key] = (value[key] - oldValue)/($.now() - $.rpijs.rates[name].time)*1000;
             }
-            
+
             value[key] = $.rpijs.parseNumber(value[key], formatOptions);
         });
-        
+
         return object;
     };
-    
+
     /* format the number according to format options */
     $.rpijs.parseNumber = function(value, formatOptions) {
         var formatSettings = $.extend({}, $.rpijs.formatDefaults, formatOptions);
@@ -258,7 +258,7 @@ if (window.MozWebSocket) {
             return value.toFixed(formatSettings.decimals) + " " + units[i] + ps;
         }
     };
-    
+
     /* get values and store for rate calculation */
     var getRate = function(name, callback, options) {
         var settings = $.extend({}, $.rpijs.defaults, options);
@@ -271,7 +271,7 @@ if (window.MozWebSocket) {
                 valueType: "none"
             }]
         };
-        
+
         $.rpijs.get(name, function(object) {
             /* if we do not have previous value we make another request in 500 */
             if ($.rpijs.rates[name] === undefined) {
@@ -280,7 +280,7 @@ if (window.MozWebSocket) {
                 }, 500);
             } else {
                 var ret = callback(parse(object, name, options));
-            
+
                 /* only update if callback returns true */
                 if (ret && settings.update != 0) {
                     setTimeout(function() {
@@ -295,7 +295,7 @@ if (window.MozWebSocket) {
             };
         }, getOptions);
     };
-    
+
     /* Stores value in jQuery html object */
     $.fn.rpijs = function(name, options) {
         return this.each(function() {
@@ -309,6 +309,6 @@ if (window.MozWebSocket) {
             }, options);
         });
     };
- 
-        
+
+
 }(jQuery));

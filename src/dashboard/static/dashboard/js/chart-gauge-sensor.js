@@ -27,7 +27,7 @@ function drawChartTemperature() {
         $.getJSON("api/v1/env_sensors/temperature/", function(result) {
             data.setValue(0,1,result.Temperature.toFixed(2));
             chart.draw(data, options);
-            console.log("Temperature " + result.Temperature.toFixed(2));
+            // console.log("Temperature " + result.Temperature.toFixed(2));
             return true;
         })
     }, updateInterval);
@@ -48,7 +48,7 @@ function drawChartHumidity() {
         $.getJSON("api/v1/env_sensors/humidity/", function(result) {
             data.setValue(0,1,result.Humidity.toFixed(2));
             chart.draw(data, options);
-            console.log("Humidity " + result.Humidity.toFixed(2));
+            // console.log("Humidity " + result.Humidity.toFixed(2));
             return true;
         })
     }, updateInterval);
@@ -69,7 +69,7 @@ function drawChartPressure() {
         $.getJSON("api/v1/env_sensors/pressure/", function(result) {
             data.setValue(0,1,result.Pressure.toFixed(2));
             chart.draw(data, options);
-            console.log("Humidity " + result.Pressure.toFixed(2));
+            // console.log("Humidity " + result.Pressure.toFixed(2));
             return true;
         })
     }, updateInterval);
