@@ -87,7 +87,7 @@
             };
 
             {# Convertir esto en función en el espacio de nombres $.pirest-utils.#}
-            function realtimeSerialChart (chartName, elementId, chartsOptions) {
+            function refreshSerialChart (chartName, elementId, chartsOptions) {
 
                 var data = [];
                 data.push([new Date(), 0])
@@ -123,14 +123,14 @@
                 }, updateInterval);
             }
 
-            var refreshId = realtimeSerialChart("temperature", "chart_realtime", chartsOptions);
+            var refreshId = refreshSerialChart("temperature", "chart_realtime", chartsOptions);
 
             selectSensor.onchange = function() {
                 var sel = selectSensor.selectedIndex;
                 var id = selectSensor.options[sel].id;
 
                 clearInterval(refreshId);
-                refreshId = realtimeSerialChart(id, "chart_realtime", chartsOptions);
+                refreshId = refreshSerialChart(id, "chart_realtime", chartsOptions);
             };
 
             // *************************** HISTORICO *******************************************************
