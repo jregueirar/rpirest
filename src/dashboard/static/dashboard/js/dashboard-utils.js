@@ -74,3 +74,68 @@ function drawChartPressure() {
         })
     }, updateInterval);
 }
+
+// chartName: Chart to print, one of the charts in chartsOptions
+// htmlElementId: The id name of the HTML Element where the chart is plotted.
+// updateInterval: Refresh Interval.
+// chartsOptions, format example:
+//{
+//  'temperature': {
+//      url: "{{ API_REST_URL }}env_sensors/temperature", labels: ['t', 'Temperatura'],
+//      ylabel: "Temperatura (ºC)", key: "Temperature"
+//   },
+//   'humidity': {
+//      url: "{{ API_REST_URL }}env_sensors/humidity", labels: ['h', 'Humedad'],
+//      ylabel: "Humedad (%)", key: "Humidity"
+//   },
+//   'pressure': {
+//      url: "{{ API_REST_URL }}env_sensors/pressure", labels: ['p', 'Presión'],
+//      ylabel: "Presión", key: "Pressure"
+//   }
+//};
+function serialChart(chartName, htmlElementId, updateInterval, chartsOptions) {
+    var data = [];
+    this.chartName = chartName;
+    this.divIdChart = htmlElementId;
+    this.refreshInterval = updateInterval;
+    this.intervalId;
+    var url = chartsOptions[this.chartName]['url'];
+
+    // Initializing data
+    // FIXME: Why this code is executed after new Dygraph?
+    $.getJSON(url, function (result) {
+        var x = new Date();
+        var y = result[chartsOptions[chartName]['key']];
+        data.push([x, y]);
+        return true;
+    });
+
+    var chart = new Dygraph(this.divIdChart, data, {
+        drawPoints: false,
+        showRoller: false,
+        labels: [chartsOptions[this.chartName]['labels'][0], chartsOptions[this.chartName]["labels"][1]],
+        legend: 'always',
+        ylabel: chartsOptions[this.chartName]['ylabel']
+    });
+
+    this.plot = function () {
+
+        // Cuidado en el contexto de setInterval this es el objeto Windows
+        this.intervalId = setInterval(function () {
+            $.getJSON(url, function (result) {
+                var x = new Date();
+                var y = result[chartsOptions[chartName]['key']].toFixed(2);
+                data.push([x, y]);
+                chart.updateOptions({'file': data});
+                return true;
+            })
+        }, this.refreshInterval);
+    };
+
+    this.replot = function () {
+        clearInterval(this.intervalId)
+        this.plot();
+    };
+
+    this.plot();
+}

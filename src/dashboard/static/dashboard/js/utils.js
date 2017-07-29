@@ -18,6 +18,4 @@ function getCookie(name) {
     return cookieValue;
 }
 
-function set_pixel(x, y, color) {
 
-}
