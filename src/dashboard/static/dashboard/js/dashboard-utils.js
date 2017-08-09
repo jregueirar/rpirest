@@ -2,6 +2,8 @@
 
 google.charts.load('current', {'packages':['gauge']});
 
+var tutua="hola mundo";
+
 google.charts.setOnLoadCallback(drawChartTemperature);
 google.charts.setOnLoadCallback(drawChartHumidity);
 google.charts.setOnLoadCallback(drawChartPressure);
@@ -9,6 +11,8 @@ google.charts.setOnLoadCallback(drawChartPressure);
 var updateInterval = 2000;
 
 function drawChartTemperature() {
+    var idElement = "chart_gauge_temp";
+
     var data = google.visualization.arrayToDataTable([
          ['Label', 'Value'],
          ['T (ºC)', 20]
@@ -21,7 +25,7 @@ function drawChartTemperature() {
         minorTicks: 5,
         max: 50
     };
-    var chart = new google.visualization.Gauge(document.getElementById('chart_gauge_temp'));
+    var chart = new google.visualization.Gauge(document.getElementById(idElement));
 
     setInterval(function() {
         $.getJSON("api/v1/env_sensors/temperature/", function(result) {
@@ -139,3 +143,32 @@ function serialChart(chartName, htmlElementId, updateInterval, chartsOptions) {
 
     this.plot();
 }
+
+function graphiteSerialChart (target, daysFrom, idElement, dygraphAttrs) {
+    this.target = target;
+    this.idElement = idElement;
+    this.dygraphAttrs = dygraphAttrs;
+    var url = target + "&format=json&from=" + daysFrom + "d&jsonp=?";
+    var chart;
+
+    plot(url, this.idElement, this.dygraphAttrs);
+
+    function plot (graphiteUrl,idElement,dygraphAttrs) {
+        $("#" + idElement).html("<p><i class=\"fa fa-spinner fa-pulse fa-3x fa-fw\"></i> Cargando Datos...</p>");
+        $.getJSON(graphiteUrl, function (response) {
+            var data = [];
+            for (i in response[0].datapoints) {
+                data.push([new Date(response[0].datapoints[i][1] * 1000), response[0].datapoints[i][0]]);
+            }
+            $("#"+idElement).removeClass("loader");
+            chart = new Dygraph(document.getElementById(idElement), data, dygraphAttrs);
+        });
+    }
+
+    this.replot = function(daysFrom) {
+        var url = this.target + "&format=json&from=" + daysFrom + "d&jsonp=?";
+        chart.destroy();
+        plot(url, this.idElement, this.dygraphAttrs);
+    }
+}
+

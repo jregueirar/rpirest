@@ -8,30 +8,21 @@
 
 {% block content_title %} Overview {% endblock content_title %}
 
-{% block menu_block %}
-    <a href="overview" class="w3-bar-item w3-button w3-padding"><i class="fa fa-eye  fa-fw"></i>  Overview</a>
-    <a href="control_led_matrix" class="w3-bar-item w3-button w3-padding w3-blue"><i class="fa fa-cubes fa-fw"></i> Control Led Matrix</a>
-    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-bullseye fa-fw"></i> SenseHat Env Sensors </a>
-    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-cog fa-fw"></i>  Settings</a><br><br>
-    <a href="api/v1" class="w3-bar-item w3-button w3-padding"><i class="fa fa-eye fa-fw"></i>  SenseHat Api REST</a>
-{%  endblock menu_block %}
-
 {% block content %}
     <div class="w3-row">
-    <div class="w3-half w3-container w3-green">
-        <h2>w3-half</h2>
+    <div class="w3-half">
         <div id="led_matrix">
             <object id="svgObject" type="image/svg+xml" data="{% static "dashboard/imgs/sense_hat_plano2.svg" %}">
                 Kiwi Logo <!-- fallback image in CSS -->
             </object>
         </div>
     </div>
-    <div class="w3-half w3-container">
-        <h2>w3-half</h2>
+    <div class="w3-half">
     </div>
     </div>
     <script>
 
+        $("#id_menu_led_matrix").addClass("w3-blue");
 
         $(function () {
             $('.led').click(function(event) {
