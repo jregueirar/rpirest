@@ -4,7 +4,7 @@
 {% load staticfiles %}
 
 {% block extra-css %}
-    <link rel="stylesheet" href="{% static "dashboard/css/led_matrix.css" %}">
+    <link rel="stylesheet" href="{% static "dashboard/css/dashboard-utils.css" %}">
     <link rel="stylesheet" href="{% static "dashboard/css/dygraph.css" %}">
 {% endblock extra-css %}
 
@@ -12,29 +12,15 @@
     {{ block.super }}
     <script type="text/javascript" src="{% static "dashboard/js/dygraph.min.js" %}"></script>
     <script type="text/javascript" src="{% static "dashboard/js/jquery.graphite.js" %}"></script>
-    <script type="text/javascript" src="{% static "dashboard/js/d3.min.js" %}"></script>
-    <script type="text/javascript" src="{% static "dashboard/js/d3.v3.js" %}"></script>
     <script type="text/javascript" src="{% static "dashboard/js/loader.js" %}"></script>
     <script type="text/javascript" src="{% static "dashboard/js/dashboard-utils.js" %}"></script>
-
-
 {% endblock js %}
 
-{% block content_title %} Sensor Ambiental:
-    <a href="https://www.raspberrypi.org/products/sense-hat/"> Sense Hat</a>{% endblock content_title %}
-
-{% block menu_block %}
-    <a href="overview" class="w3-bar-item w3-button w3-padding w3-blue"><i class="fa fa-eye  fa-fw"></i> Sensores
-        Ambientales</a>
-    <a href="control_led_matrix" class="w3-bar-item w3-button w3-padding"><i class="fa fa-cubes fa-fw"></i> Matriz
-        Led</a>
-    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-bullseye fa-fw"></i> Sistema RPI</a>
-    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-cog fa-fw"></i> Configuración</a><br><br>
-    <a href="api/v1" class="w3-bar-item w3-button w3-padding"><i class="fa fa-eye fa-fw"></i> API REST</a>
-{% endblock menu_block %}
+{% block content_title %}
+    <i class="fa fa-dashboard"></i> Sensor Ambiental:
+    <a href="https://www.raspberrypi.org/products/sense-hat/">Sense Hat</a>{% endblock content_title %}
 
 {% block content %}
-    <h2> Tiempo Real </h2>
     <div class="w3-row-padding w3-margin-bottom">
         <div class="w3-half">
             <div class="w3-third">
@@ -48,44 +34,59 @@
             </div>
         </div>
         <div class="w3-half">
-            <div class="w3-container">
-                <b>Sensor:</b>
-                <select id="select_sensor">
-                    <option selected="selected" value="temperature">Temperatura</option>
-                    <option value="humidity">Humedad</option>
-                    <option value="pressure">Presión</option>
-                </select>
-                <select id="select_interval">
-                    <option value="1000">1 seg</option>
-                    <option selected="selected" value="2000">2 seg</option>
-                    <option value="5000">5 seg</option>
-                    <option value="10000"> 10 seg</option>
-                    <option value="30000"> 30 seg</option>
-                </select>
-                <div id="chart_realtime"></div>
-                <div id="chart_humidity"></div>
-            </div>
+            <b>Sensor:</b> <select id="id_select_sensor">
+            <option selected="selected" value="temperature">Temperatura</option>
+            <option value="humidity">Humedad</option>
+            <option value="pressure">Presión</option>
+        </select>
+            <i class="fa fa-refresh"></i>
+            <select id="id_select_interval">
+                <option value="1000">1 seg</option>
+                <option selected="selected" value="2000">2 seg</option>
+                <option value="5000">5 seg</option>
+                <option value="10000"> 10 seg</option>
+                <option value="30000"> 30 seg</option>
+            </select>
+            <div id="chart_realtime"></div>
         </div>
     </div>
 
-    <h2> Histórico </h2>
-    <div class="w3-row-padding w3-margin-bottom">
+    <div class="w3-container w3-teal">
         <div class="w3-half">
-            <div class="w3-container">
-                <div id="graph_temp"></div>
-            </div>
+            <h5><b> <i class="fa fa-calendar" aria-hidden="true"></i> Histórico Mediciones</b></h5>
         </div>
         <div class="w3-half">
-            <div class="w3-container">
-                <div id="graph_humidity"></div>
-            </div>
+            <button id="id_button_day" class="button-time w3-button w3-border w3-round-xlarge" value=-1>Día</button>
+            <button id="id_button_week" class="button-time w3-button w3-border w3-round-xlarge" value=-7>Semana</button>
+            <button id="id_button_month" class="button-time w3-button w3-border w3-round-xlarge" value=-31>Mes</button>
+            <button id="id_button_year" class="button-time w3-button w3-border w3-round-xlarge" value=-365>Año</button>
+            </h5>
         </div>
     </div>
+
+    <div class="w3-row-padding w3-margin-top">
+        <div class="w3-half">
+            <div id="chart_temp"></div>
+        </div>
+        <div class="w3-half">
+            <div id="chart_humidity"></div>
+        </div>
+    </div>
+
+    <div class="w3-row-padding w3-margin-top w3-container">
+        <div class="w3-half">
+            <div id="chart_pressure"></div>
+        </div>
+        <div class="w3-half w3-container container">
+        </div>
+    </div>
+
     <script>
-
         $(document).ready(function () {
-            var selectSensor = $("#select_sensor");
-            var selectRefresh = $("#select_interval");
+            $('#id_menu_env_sensor').addClass("w3-blue")
+
+            var selectSensor = $("#id_select_sensor");
+            var selectRefresh = $("#id_select_interval");
             var divIdChart = "chart_realtime";
             var chartConfiguration = {
                 'temperature': {
@@ -117,40 +118,44 @@
                 chart.replot();
             });
 
+
             // *************************** HISTORICO *******************************************************
-            //JSONP
-            url = "{{ GRAPHITE_LOCAL_URL }}/render?target=env_sensor.sense_hat.temperature&format=json&from=-1w&jsonp=?"
-            $.getJSON(url, function (response) {
-                var data = [];
-                for (i in response[0].datapoints) {
-                    data.push([new Date(response[0].datapoints[i][1] * 1000), response[0].datapoints[i][0]]);
-                }
+            $("#id_button_day").addClass("w3-grey");
+            var graphiteFrom = $("#id_button_day").val();
 
-                new Dygraph(document.getElementById("graph_temp"),
-                        data,
-                        {
-                            labels: ["Fecha", "Temperatura"],
-                            legend: 'always',
-                            showRangeSelector: false,
-                            ylabel: 'Temperatura (ºC)',
-                        });
-            });
+            var targetTemp = "{{ GRAPHITE_LOCAL_URL }}/render?target=env_sensor.sense_hat.temperature";
+            var targetHumidity = "{{ GRAPHITE_LOCAL_URL }}/render?target=env_sensor.sense_hat.humidity";
+            var targetPressure = "{{ GRAPHITE_LOCAL_URL }}/render?target=env_sensor.sense_hat.pressure";
+            dygraphAttrsTemp = {
+                labels: ["Fecha", "Temperatura"],
+                legend: 'always',
+                showRangeSelector: false,
+                ylabel: 'Temperatura (ºC)'
+            };
+            dygraphAttrsHumidity = {
+                labels: ["Date", "Humedad"],
+                legend: 'always',
+                showRangeSelector: false,
+                ylabel: 'Humedad(%)'
+            };
+            dygraphAttrsPressure = {
+                labels: ["Date", "Presión"],
+                legend: 'always',
+                showRangeSelector: false,
+                ylabel: 'Presión',
+            };
 
-            url = "{{ GRAPHITE_LOCAL_URL }}/render?target=env_sensor.sense_hat.humidity&format=json&from=-1w&jsonp=?"
-            $.getJSON(url, function (response) {
-                var data = [];
-                for (i in response[0].datapoints) {
-                    data.push([new Date(response[0].datapoints[i][1] * 1000), response[0].datapoints[i][0]]);
-                }
+            graphiteTemp = new graphiteSerialChart(targetTemp, graphiteFrom, "chart_temp", dygraphAttrsTemp);
+            graphiteHumidity = new graphiteSerialChart(targetHumidity, graphiteFrom, "chart_humidity", dygraphAttrsHumidity);
+            graphitePressure = new graphiteSerialChart(targetPressure, graphiteFrom, "chart_pressure", dygraphAttrsPressure);
 
-                new Dygraph(document.getElementById("graph_humidity"),
-                        data,
-                        {
-                            labels: ["Date", "Humedad"],
-                            legend: 'always',
-                            showRangeSelector: false,
-                            ylabel: 'Humedad(%)',
-                        });
+            $(".button-time").on("click", function () {
+                $(".button-time").removeClass("w3-grey");
+                $(this).addClass("w3-grey");
+                graphiteFrom = $(this).val();
+                graphiteTemp.replot(graphiteFrom);
+                graphiteHumidity.replot(graphiteFrom);
+                graphitePressure.replot(graphiteFrom);
             });
         });
     </script>
