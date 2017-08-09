@@ -9,17 +9,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     {% block css %}
-        <link rel="stylesheet" href="https://www.w3schools.com/w3css/3/w3.css">
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+        <link rel="stylesheet" href="{% static "dashboard/css/w3.css" %}">
+        <link rel="stylesheet" href="{% static "dashboard/css/raleway.css" %}">
+        <link rel="stylesheet" href="{% static "dashboard/css/font-awesome.min.css" %}">
     {% endblock css %}
     {% block extra-css %}{% endblock %}
 
     {% block js  %}
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
-    <script src="{% static "dashboard/js/utils.js" %}"></script>
-    <script src="{% static "dashboard/js/jquery.sensehat.js" %}"></script>
-    <script src="{% static "dashboard/js/jquery-rpijs.js" %}"></script>
-    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+        <script src="{% static "dashboard/js/jquery.min.js" %}"></script>
+        <script src="{% static "dashboard/js/utils.js" %}"></script>
+        <script src="{% static "dashboard/js/jquery.sensehat.js" %}"></script>
+        <script src="{% static "dashboard/js/jquery-rpijs.js" %}"></script>
     {% endblock js %}
 
     <style>
@@ -51,7 +51,6 @@
 <nav class="w3-sidebar w3-collapse w3-white w3-animate-left" style="z-index:3;width:300px;" id="mySidebar"><br>
   <div class="w3-container w3-row">
     <div class="w3-col s4">
-{#        <img src="/w3images/avatar2.png" class="w3-circle w3-margin-right" style="width:46px">#}
         <img src="{% static "dashboard/imgs/Sense-HAT-web.jpg"%}" class="w3-circle w3-margin-right" style="width:100px">
     </div>
 
@@ -59,25 +58,33 @@
       {% if user.is_authenticated %}
       <span>Bienvenido <strong> {{ user }} </strong></span><br>
       {% else %}
-      <span
       {% endif %}
-      <!--<a href="#" class="w3-bar-item w3-button"><i class="fa fa-envelope"></i></a>
-      <a href="#" class="w3-bar-item w3-button"><i class="fa fa-user"></i></a>
-      <a href="#" class="w3-bar-item w3-button"><i class="fa fa-cog"></i></a>-->
     </div>
   </div>
   <hr>
-{#  <div class="w3-container">#}
-{#    <h5>Dashboard</h5>#}
-{#  </div>#}
   <div class="w3-bar-block">
-    <a href="#" class="w3-bar-item w3-button w3-padding-16 w3-hide-large w3-dark-grey w3-hover-black" onclick="w3_close()" title="close menu"><i class="fa fa-remove fa-fw"></i>  Close Menu</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding-16 w3-hide-large w3-dark-grey w3-hover-black"
+       onclick="w3_close()" title="close menu"><i class="fa fa-remove fa-fw"></i>  Close Menu</a>
       {% block menu_block %}
+<<<<<<< HEAD
           <a href="overview" class="w3-bar-item w3-button w3-padding w3-blue"><i class="fa fa-eye  fa-fw"></i>  Overview</a>
           <a href="control_led_matrix" class="w3-bar-item w3-button w3-padding"><i class="fa fa-cubes fa-fw"></i> Control Led Matrix</a>
           <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-bullseye fa-fw"></i> SenseHat Env Sensors </a>
           <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-cog fa-fw"></i>  Settings</a><br><br>
           <a href="api/v1" class="w3-bar-item w3-button w3-padding"><i class="fa fa-eye fa-fw"></i>  Browse API REST</a>
+=======
+          <a id="id_menu_env_sensor" href="overview" class="w3-bar-item w3-button w3-padding">
+              <i class="fa fa-dashboard"></i> Sensores Ambientales</a>
+          <a id="id_menu_led_matrix" href="control_led_matrix" class="w3-bar-item w3-button w3-padding">
+              <i class="fa fa-cubes fa-fw"></i> Matriz
+        Led</a>
+          <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-bullseye fa-fw"></i> Sistema RPI</a>
+          <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-cog fa-fw"></i> Configuración</a><br><br>
+          <a href="api/v1" class="w3-bar-item w3-button w3-padding"><i class="fa fa-eye fa-fw"></i> API REST</a>
+          <a href="Graphana" class="w3-bar-item w3-button w3-padding"><i class="fa fa-eye fa-fw"></i> Graphana</a>
+          <a href="https://github.com/jregueirar/pirest-sense-hat" class="w3-bar-item w3-button w3-padding">
+              <i class="fa fa-github"></i> Código fuente</a>
+>>>>>>> ba50d6a... Close #1 and Close #2
       {% endblock menu_block %}
   </div>
 </nav>
@@ -94,64 +101,10 @@
   <!-- Header -->
   {% block content_header %}
     <header class="w3-container" style="padding-top:22px">
-        <h5><b><i class="fa fa-dashboard"></i>{% block content_title %} Tutua {% endblock content_title %}</b></h5>
+        <h5><b>{% block content_title %}<i class="fa fa-dashboard"></i> Tutua {% endblock content_title %}</b></h5>
     </header>
   {% endblock content_header %}
 
- <!--
-  <div class="w3-row-padding w3-margin-bottom">
-    <div class="w3-quarter">
-      <div class="w3-container w3-red w3-padding-16">
-        <div class="w3-left"><i class="fa fa-comment w3-xxxlarge"></i></div>
-        <div class="w3-right">
-          <h3>52</h3>
-        </div>
-        <div class="w3-clear"></div>
-        <h4>Messages</h4>
-      </div>
-    </div>
-    <div class="w3-quarter">
-      <div class="w3-container w3-blue w3-padding-16">
-        <div class="w3-left"><i class="fa fa-eye w3-xxxlarge"></i></div>
-        <div class="w3-right">
-          <h3>99</h3>
-        </div>
-        <div class="w3-clear"></div>
-        <h4>Views</h4>
-      </div>
-    </div>
-    <div class="w3-quarter">
-      <div class="w3-container w3-teal w3-padding-16">
-        <div class="w3-left"><i class="fa fa-share-alt w3-xxxlarge"></i></div>
-        <div class="w3-right">
-          <h3>23</h3>
-        </div>
-        <div class="w3-clear"></div>
-        <h4>Shares</h4>
-      </div>
-    </div>
-      <div class="w3-quarter">
-      <div class="w3-container w3-teal w3-padding-16">
-        <div class="w3-left"><i class="fa fa-share-alt w3-xxxlarge"></i></div>
-        <div class="w3-right">
-          <h3>23</h3>
-        </div>
-        <div class="w3-clear"></div>
-        <h4>Shares</h4>
-      </div>
-    </div>
-    <div class="w3-quarter">
-      <div class="w3-container w3-orange w3-text-white w3-padding-16">
-        <div class="w3-left"><i class="fa fa-users w3-xxxlarge"></i></div>
-        <div class="w3-right">
-          <h3>50</h3>
-        </div>
-        <div class="w3-clear"></div>
-        <h4>Users 2</h4>
-      </div>
-    </div>
-  </div>
--->
 {% block content %}
   <div class="w3-panel">
     <div class="w3-row-padding" style="margin:0 -16px">
