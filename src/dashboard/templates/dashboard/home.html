@@ -35,10 +35,10 @@
         </div>
         <div class="w3-half">
             <b>Sensor:</b> <select id="id_select_sensor">
-            <option selected="selected" value="temperature">Temperatura</option>
-            <option value="humidity">Humedad</option>
-            <option value="pressure">Presión</option>
-        </select>
+                <option selected="selected" value="temperature">Temperatura</option>
+                <option value="humidity">Humedad</option>
+                <option value="pressure">Presión</option>
+            </select>
             <i class="fa fa-refresh"></i>
             <select id="id_select_interval">
                 <option value="1000">1 seg</option>
@@ -83,7 +83,10 @@
 
     <script>
         $(document).ready(function () {
-            $('#id_menu_env_sensor').addClass("w3-blue")
+            $('#id_menu_env_sensor').addClass("w3-blue");
+
+            var api_rest_url = $("#api_rest_url").attr("data-value");
+            console.log("api_rest_url: " + api_rest_url);
 
             var selectSensor = $("#id_select_sensor");
             var selectRefresh = $("#id_select_interval");
@@ -123,9 +126,9 @@
             $("#id_button_day").addClass("w3-grey");
             var graphiteFrom = $("#id_button_day").val();
 
-            var targetTemp = "{{ GRAPHITE_LOCAL_URL }}/render?target=env_sensor.sense_hat.temperature";
-            var targetHumidity = "{{ GRAPHITE_LOCAL_URL }}/render?target=env_sensor.sense_hat.humidity";
-            var targetPressure = "{{ GRAPHITE_LOCAL_URL }}/render?target=env_sensor.sense_hat.pressure";
+            var targetTemp = "{{ GRAPHITE_URL }}/render?target=env_sensor.sense_hat.temperature";
+            var targetHumidity = "{{ GRAPHITE_URL }}/render?target=env_sensor.sense_hat.humidity";
+            var targetPressure = "{{ GRAPHITE_URL }}/render?target=env_sensor.sense_hat.pressure";
             dygraphAttrsTemp = {
                 labels: ["Fecha", "Temperatura"],
                 legend: 'always',

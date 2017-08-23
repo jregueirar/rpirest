@@ -1,7 +1,7 @@
 ---
 - name: restart pirest-sense-hat
   command: supervisorctl restart {{app_name}}
- 
+
 - name: reread supervisor
   command: "supervisorctl update"
 
@@ -16,3 +16,9 @@
   args:
     chdir: "{{ app_path }}"
   become: true
+
+- name: django migrate
+  command: python3 manage.py migrate
+  args:
+    chdir: "{{ app_path }}"
+

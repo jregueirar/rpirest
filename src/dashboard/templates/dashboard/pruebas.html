@@ -1,0 +1,28 @@
+<html>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<body>
+<div id="divPersona1"></div>
+<div id="divPersona2"></div>
+
+<script>
+    $(document).ready(function() {
+        function person(name, surname) {
+            this.name = name;
+            this.surname = surname;
+
+            this.fullname = function () {
+                return (this.name + " " + this.surname);
+            }
+        }
+
+        persona1 = new person("Elia", "Regueira" );
+        persona2 = new person("?", "Regueira");
+
+        $("#divPersona1").text(persona1.fullname());
+        $("#divPersona2").text(persona2.fullname());
+    });
+</script>
+</body>
+</html>

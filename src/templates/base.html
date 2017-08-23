@@ -29,8 +29,10 @@
 </head>
 
 <body class="w3-light-grey">
-{%  block body %}
+ {# Useful for code javascript#}
+ <div id="api_rest_url" data-value="{{ API_REST_URL }}" hidden></div>
 
+ {%  block body %}
     <!-- Top container -->
 {% block top_container %}
 <div class="w3-container w3-top w3-black w3-large w3-padding" style="z-index:4">
@@ -73,9 +75,9 @@
         Led</a>
           <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-bullseye fa-fw"></i> Sistema RPI</a>
           <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-cog fa-fw"></i> Configuración</a><br><br>
-          <a href="api/v1" class="w3-bar-item w3-button w3-padding"><i class="fa fa-eye fa-fw"></i> API REST</a>
-          <a href="Graphana" class="w3-bar-item w3-button w3-padding"><i class="fa fa-eye fa-fw"></i> Graphana</a>
-          <a href="https://github.com/jregueirar/pirest-sense-hat" class="w3-bar-item w3-button w3-padding">
+          <a href="{{ API_REST_URL }}" target="_blank" class="w3-bar-item w3-button w3-padding"><i class="fa fa-exchange fa-fw"></i> API REST</a>
+          <a href="{{ GRAFANA_URL }}" target="_blank" class="w3-bar-item w3-button w3-padding"><i class="fa fa-area-chart fa-fw"></i> Grafana</a>
+          <a href="https://github.com/jregueirar/pirest-sense-hat" target="_blank" class="w3-bar-item w3-button w3-padding">
               <i class="fa fa-github"></i> Código fuente</a>
       {% endblock menu_block %}
   </div>
@@ -96,7 +98,9 @@
   {% endblock content_header %}
 
 {% block content %}
-  <div class="w3-panel">
+
+
+    <div class="w3-panel">
     <div class="w3-row-padding" style="margin:0 -16px">
       <div class="w3-third">
         {% block led_matrix %} {% endblock led_matrix%}

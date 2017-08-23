@@ -1,0 +1,9 @@
+---
+# defaults file for rpi-grafana
+
+### Package for raspbian
+grafana_deb_url: https://github.com/fg2it/grafana-on-raspberry/releases/download/v4.3.2/grafana_4.3.2_armhf.deb
+grafana_admin_password: admin
+grafana_admin_user: admin
+grafana_http_port: 3000
+grafana_ip: localhost

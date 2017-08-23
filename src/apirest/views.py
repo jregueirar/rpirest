@@ -16,7 +16,15 @@ if settings.SENSE_HAT:
         from sense_hat import SenseHat
     except ImportError:
         raise SystemExit('[ERROR] Please make sure sense_hat is installed properly')
-    sense = SenseHat()
+
+    # Parche para permitir despliegue sin que sensehat este conectado
+    # Fixme: ¿mejorar para que se vea el error en la APP web?
+    # Si no se pone la excepción falla el despliegue si el sense-hat no esta enchufado
+    try:
+        sense = SenseHat()
+    except OSError:
+        pass
+
 
 # Get an instance of a logger
 logger = logging.getLogger("apirest")

@@ -1,0 +1,14 @@
+---
+# defaults file for rpi-graphite
+graphite_secret_key: 'SDFkhaoboqqggb1)yR-czZ=JXfZxaQZ-o{s8uAZgC{:R+,*3A0I:KS?a~NJxG'
+graphite_api_process_bind: "8888"
+graphite_api_bind: "0.0.0.0:8080"
+carbon_conf_path: "/etc/carbon"
+graphite_conf_path: "/etc/graphite"
+gunicorn_path: "/usr/local/bin/gunicorn"
+
+### NGINX Configuration
+nginx_remove_default_vhost: true
+nginx_sites_available: /etc/nginx/sites-available
+nginx_sites_enabled: /etc/nginx/sites-enabled
+nginx_graphite_site: graphite-api.conf
