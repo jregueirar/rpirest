@@ -8,14 +8,7 @@
     - nginx
     - python3-numpy
   tags:
-    - package
-
-- name: Graphite | Installing packages
-  action: apt name={{ item }} state=present
-  with_items:
-    - graphite-carbon
-    - graphite-web
-  tags: [graphite]
+    - installation
 
 
 - name: Installing sense-hat package
@@ -27,12 +20,14 @@
   tags:
     - app_code
   notify:
+    - django migrate
     - django collect_static
     - restart pirest-sense-hat
     - django installtasks
-
 
 - name: Executing pip3 -r requirements.txt
   pip:
     requirements: "{{ app_path }}/requirements.txt"
     executable: pip3
+
+

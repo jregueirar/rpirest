@@ -148,8 +148,8 @@ LOGOUT_REDIRECT_URL = '/'
 #   CHANGE IN LOCAL SETTINGS IF YOU WANT. FOR EXAMPLE FOR DEVELOP
 #   AND TESTING
 ###################
-
-URL_LOCAL_GRAPHITE = "http://localhost:8080"
+URL_LOCAL_GRAPHITE = "http://rpi2:8080"
+GRAFANA_URL="http://rpi2:3000/dashboard/db/sensores-ambientales?from=now%2Fd&to=now%2Fd"
 DEBUG = True
 SENSE_HAT = True
 
@@ -160,7 +160,7 @@ LOGGING = {
         'file': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
-            'filename': '/var/log/info.log',
+            'filename': '/var/log/pirest-sense-hat/info.log',
         },
     },
     'loggers': {

@@ -5,6 +5,14 @@
   become: yes
 
   roles:
-    - { role: geerlingguy.nginx, tags: [ 'nginx'] }
-    # - graphite
-    - pirest-sense-hat 
+    # Install graphite in a rpi
+    - {role: rpi-graphite, tags: ['grafana', 'graphite']}
+
+    # Install grafana in rpi
+    - {role: rpi-grafana, tags: ['grafana']}
+#    - {role: rpi-grafana, when: ansible_lsb.id == 'Raspbian'}
+    - {role: ansiblebit.grafana, tags: ['grafana'], grafana_admin_password: "admin"}
+
+    # APP pirest-sense-hat
+    #- { role: pirest-sense-hat, grafana: true }
+    - pirest-sense-hat

@@ -1,0 +1,34 @@
+# Grafana: Configuring datasource and importing dashboards.
+# DOC:
+# a) http://docs.grafana.org/http_api/
+# b)  https://stackoverflow.com/questions/31166932/create-grafana-dashboards-with-api
+# c) curl -XPOST -i http://admin:admin@rpi3:3000/api/datasources --data-binary @./graphite_localhost.json
+# -H "Content-Type: application/json"
+- name: Grafana | Create Datasources
+  uri:
+    url: http://{{grafana_ip}}:{{grafana_http_port}}/api/datasources
+    method: POST
+    user: "{{ grafana_admin_user }}"
+    password: "admin"
+    body: "{{ item }}"
+    status_code: 200, 409
+    body_format: json
+    force_basic_auth: yes
+    headers:
+      Content-Type: "application/json"
+  with_file:
+    - grafana/datasources/graphite_localhost.json
+
+- name: Grafana | Import Dashboards
+  uri:
+    url: "http://localhost:3000/api/dashboards/db"
+    force_basic_auth: yes
+    user: "{{ grafana_admin_user }}"
+    password: "{{ grafana_admin_password }}"
+    headers:
+      Content-Type: "application/json"
+    method: POST
+    body_format: json
+    body: "{\"dashboard\":{{ lookup(\"file\", item) }}, \"overwrite\": true}"
+  with_fileglob:
+    - grafana/dashboards/*.json
