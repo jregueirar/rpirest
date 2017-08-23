@@ -1,4 +1,18 @@
 
+=======
+## 0.31 (207-08-21)
+ - graphite-api is used instead graphite-web. graphite-api is installed from pip3 because
+   the package doesn't exist for Raspbian Jessie.
+
+## 0.3 (2017-07-18)
+ - Support for logs, it is useful for debugging.
+ - For time series charts, the javascript dygraph library is used.
+ - For gauge charts, the javascript google chart library is used.
+ - It is send metrics to the local graphite.
+ - It isn't charged the python sense-hat library if the operative system isn't Raspbian (For example debug with vagrant).
+ - Appearance is improved
+
+>>>>>>> fb498b5... Tagging the version
 
 ## 0.202 (2017-05-04)
 
