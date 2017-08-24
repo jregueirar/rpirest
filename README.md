@@ -6,10 +6,14 @@
   * edit staging
   * ansible-playbook pirest-sense-hat.yml -l rpis -i staging
 
-* Create superuser
+* Create superuser for login in the GUI
+  * ssh rpi
   * cd /opt/pirest_sense_hat
   * python3 manage.py createsuperuser --username admin --email admin@localhost --noinput
-  * python3 changepassword admin
+  * python3 manage.py changepassword admin
+
+* Login in the GUI with the superuser credentials
+
 ## Screenshots
 
 ### Main Dashboard Page

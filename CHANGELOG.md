@@ -1,4 +1,7 @@
-## 0.31 (207-08-21) 
+## v0.302 (2017-08-24)
+ - Fix errors in the deployment of graphite. 
+
+## 0.31 (2017-08-21) 
  - graphite-api is used instead graphite-web. graphite-api is installed from pip3 because 
    the package doesn't exist for Raspbian Jessie. 
 
