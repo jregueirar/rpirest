@@ -63,6 +63,9 @@
   tags:
     - configuration
 
+- name: Ensure graphite-api is started and is started on boot.
+  service: name=graphite-api state=started enabled=yes
+
 - name: Nginx | Configure graphite-api upstream
   template:
     src: templates/nginx-graphite-api.conf.j2

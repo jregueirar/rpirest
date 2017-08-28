@@ -70,9 +70,10 @@
       {% block menu_block %}
           <a id="id_menu_env_sensor" href="overview" class="w3-bar-item w3-button w3-padding">
               <i class="fa fa-dashboard"></i> Sensores Ambientales</a>
-          <a id="id_menu_led_matrix" href="control_led_matrix" class="w3-bar-item w3-button w3-padding">
-              <i class="fa fa-cubes fa-fw"></i> Matriz
-        Led</a>
+          {% if DEVICE_ATTACHED == "sense_hat" %}
+              <a id="id_menu_led_matrix" href="control_led_matrix" class="w3-bar-item w3-button w3-padding">
+                  <i class="fa fa-cubes fa-fw"></i> Matriz Led</a>
+          {% endif %}
           <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-bullseye fa-fw"></i> Sistema RPI</a>
           <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-cog fa-fw"></i> Configuración</a><br><br>
           <a href="{{ API_REST_URL }}" target="_blank" class="w3-bar-item w3-button w3-padding"><i class="fa fa-exchange fa-fw"></i> API REST</a>

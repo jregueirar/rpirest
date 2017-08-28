@@ -11,20 +11,30 @@ from .utils import save_uploaded_file_to_disk
 from django.conf import settings
 import logging
 
-if settings.SENSE_HAT:
-    try:
-        from sense_hat import SenseHat
-    except ImportError:
-        raise SystemExit('[ERROR] Please make sure sense_hat is installed properly')
 
-    # Parche para permitir despliegue sin que sensehat este conectado
-    # Fixme: ¿mejorar para que se vea el error en la APP web?
-    # Si no se pone la excepción falla el despliegue si el sense-hat no esta enchufado
-    try:
-        sense = SenseHat()
-    except OSError:
-        pass
 
+if settings.DEVICE_ATTACHED == "sense_hat":
+    # Useful for testing in vagrant or docker
+    if settings.SENSE_HAT:
+        try:
+            from sense_hat import SenseHat
+        except ImportError:
+            raise SystemExit('[ERROR] Please make sure sense_hat is installed properly')
+
+        # Parche para permitir despliegue sin que sensehat este conectado
+        # Fixme: ¿mejorar para que se vea el error en la APP web?
+        # Si no se pone la excepción falla el despliegue si el sense-hat no esta enchufado
+        try:
+            sense = SenseHat()
+        except OSError:
+            pass
+
+if settings.DEVICE_ATTACHED == "dht22" or settings.DEVICE_ATTACHED == "dht11" or settings.DEVICE_ATTACHED == "am2302":
+    import Adafruit_DHT
+
+    DHT_SENSORS = {'dht11': Adafruit_DHT.DHT11,
+                    'dht22': Adafruit_DHT.DHT22,
+                    'am2302': Adafruit_DHT.AM2302}
 
 # Get an instance of a logger
 logger = logging.getLogger("apirest")
@@ -207,9 +217,14 @@ class HumidityView(viewsets.ViewSet):
     Gets the current temperature in degrees Celsius from the humidity sensor.
     """
     def list(self, request):
-        result = sense.get_humidity()
+        if settings.DEVICE_ATTACHED == 'sense_hat':
+            result = sense.get_humidity()
+        else:
+            result, temperature = Adafruit_DHT.read_retry(DHT_SENSORS[settings.DEVICE_ATTACHED], settings.DHT_GPIO_PIN)
 
-        response={'url': None}
+        response={'url': request.path}
+        response['status']="success"
+        response['msg'] = "Sensor " + settings.DEVICE_ATTACHED
         response['Humidity'] = result
         return Response(response)
 
@@ -222,15 +237,17 @@ class TemperatureView(viewsets.ViewSet):
     """
 
     def list(self, request):
-        result = sense.get_temperature_from_humidity()
+        if settings.DEVICE_ATTACHED == 'sense_hat':
+            result = sense.get_temperature_from_humidity()
+        else:
+            humidity, result = Adafruit_DHT.read_retry(DHT_SENSORS[settings.DEVICE_ATTACHED], settings.DHT_GPIO_PIN)
 
         response={'url': request.path}
         response['status']="success"
+        response['msg'] = "Sensor " + settings.DEVICE_ATTACHED
         response['Temperature'] = result
         logger.debug('TemperatureView: ' + str(result))
         return Response(response)
-
-
 
 class TemperatureFromHumidityView(viewsets.ViewSet):
     """

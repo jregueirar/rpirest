@@ -1,6 +1,9 @@
 ---
 # vars file for pirest-sense-hat
 
+
+
+
 ### APP Configuration
 app_name: "pirest-sense-hat"
 app_src: "../src/"
@@ -16,5 +19,9 @@ app_dir_logs: "/var/log/{{ app_name }}"
 nginx_remove_default_vhost: true
 nginx_sites_available: /etc/nginx/sites-available
 nginx_sites_enabled: /etc/nginx/sites-enabled
+
+### Values for dht22 sensor (pi_attach == 'dht22')
+dht22_library_path: "/opt/adafruit_python_dht"
+dht22_library_git: "https://github.com/adafruit/Adafruit_Python_DHT.git"
 
 

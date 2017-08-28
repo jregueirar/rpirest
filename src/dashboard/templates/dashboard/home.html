@@ -37,7 +37,9 @@
             <b>Sensor:</b> <select id="id_select_sensor">
                 <option selected="selected" value="temperature">Temperatura</option>
                 <option value="humidity">Humedad</option>
-                <option value="pressure">Presión</option>
+                {%  if DEVICE_ATTACHED == "sense_hat" %}
+                    <option value="pressure">Presión</option>
+                {% endif %}
             </select>
             <i class="fa fa-refresh"></i>
             <select id="id_select_interval">
@@ -85,6 +87,12 @@
         $(document).ready(function () {
             $('#id_menu_env_sensor').addClass("w3-blue");
 
+            if ("{{ DEVICE_ATTACHED }}" == "sense_hat" ) {
+                myGaugeCharts(true)
+            }else{
+                myGaugeCharts(false)
+            }
+
             var api_rest_url = $("#api_rest_url").attr("data-value");
             console.log("api_rest_url: " + api_rest_url);
 
@@ -99,12 +107,15 @@
                 'humidity': {
                     url: "{{ API_REST_URL }}env_sensors/humidity", labels: ['h', 'Humedad'],
                     ylabel: "Humedad (%)", key: "Humidity"
-                },
-                'pressure': {
+                }
+            };
+
+            if ("{{ DEVICE_ATTACHED }}" == "sense_hat") {
+                chartConfiguration["pressure"] = {
                     url: "{{ API_REST_URL }}env_sensors/pressure", labels: ['p', 'Presión'],
                     ylabel: "Presión", key: "Pressure"
                 }
-            };
+            }
 
             var chart = new serialChart(selectSensor.val(), divIdChart, selectRefresh.val(),
                     chartConfiguration);
@@ -126,9 +137,8 @@
             $("#id_button_day").addClass("w3-grey");
             var graphiteFrom = $("#id_button_day").val();
 
-            var targetTemp = "{{ GRAPHITE_URL }}/render?target=env_sensor.sense_hat.temperature";
-            var targetHumidity = "{{ GRAPHITE_URL }}/render?target=env_sensor.sense_hat.humidity";
-            var targetPressure = "{{ GRAPHITE_URL }}/render?target=env_sensor.sense_hat.pressure";
+            var targetTemp = "{{ GRAPHITE_URL }}/render?target=env_sensor.localhost.temperature";
+            var targetHumidity = "{{ GRAPHITE_URL }}/render?target=env_sensor.localhost.humidity";
             dygraphAttrsTemp = {
                 labels: ["Fecha", "Temperatura"],
                 legend: 'always',
@@ -141,16 +151,19 @@
                 showRangeSelector: false,
                 ylabel: 'Humedad(%)'
             };
-            dygraphAttrsPressure = {
-                labels: ["Date", "Presión"],
-                legend: 'always',
-                showRangeSelector: false,
-                ylabel: 'Presión',
-            };
-
             graphiteTemp = new graphiteSerialChart(targetTemp, graphiteFrom, "chart_temp", dygraphAttrsTemp);
             graphiteHumidity = new graphiteSerialChart(targetHumidity, graphiteFrom, "chart_humidity", dygraphAttrsHumidity);
-            graphitePressure = new graphiteSerialChart(targetPressure, graphiteFrom, "chart_pressure", dygraphAttrsPressure);
+
+            if ( "{{ DEVICE_ATTACHED }}" == "sense_hat") {
+                var targetPressure = "{{ GRAPHITE_URL }}/render?target=env_sensor.localhost.pressure";
+                dygraphAttrsPressure = {
+                    labels: ["Date", "Presión"],
+                    legend: 'always',
+                    showRangeSelector: false,
+                    ylabel: 'Presión',
+                };
+                graphitePressure = new graphiteSerialChart(targetPressure, graphiteFrom, "chart_pressure", dygraphAttrsPressure);
+            }
 
             $(".button-time").on("click", function () {
                 $(".button-time").removeClass("w3-grey");
@@ -158,7 +171,9 @@
                 graphiteFrom = $(this).val();
                 graphiteTemp.replot(graphiteFrom);
                 graphiteHumidity.replot(graphiteFrom);
-                graphitePressure.replot(graphiteFrom);
+                if ("{{ DEVICE_ATTACHED }}" == "sense_hat") {
+                    graphitePressure.replot(graphiteFrom);
+                }
             });
         });
     </script>

@@ -1,0 +1,18 @@
+- name: Installing packages dependencies for Adafruit Python DHT Sensor Library
+  action: apt name={{ item }} state=present
+  with_items:
+    - build-essential
+    - python-dev
+  tags:
+    - installation
+
+- name: Download Adafruit Python DHT Sensor Library
+  git:
+    repo: "{{ dht22_library_git }}"
+    dest: "{{ dht22_library_path }}"
+
+- name: Install Adafruit Python DHT Sensor Library
+  become: true
+  command: python3 setup.py install
+  args:
+    chdir: "{{ dht22_library_path }}"

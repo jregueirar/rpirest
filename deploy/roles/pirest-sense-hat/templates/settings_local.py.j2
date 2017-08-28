@@ -3,7 +3,9 @@
 
 GRAPHITE_URL = "{{ graphite_url }}"
 API_REST_URL = "{{ api_rest_url }}"
-# API_REST_URL="../api/v1/"
 
 DEBUG = {{ django_debug }}
 SENSE_HAT = {{ sense_hat }}
+
+DEVICE_ATTACHED = "{{ device_attached }}"       # sense_hat, dht11, dht22 or am2302
+DHT_GPIO_PIN = {{ dht_gpio_pin }}               # Pin where the output of dht11, dht22 or am2302 is conected

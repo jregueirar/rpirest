@@ -3,8 +3,9 @@
 
 * Desployment
   * cd deploy
-  * edit staging
-  * ansible-playbook pirest-sense-hat.yml -l rpis -i staging
+  * Edit inventory file with your Raspberrypi infraestructure
+  * ansible-galaxy install -r
+  * ansible-playbook pirest-sense-hat.yml -l rpis -i inventory
 
 * Create superuser for login in the GUI
   * ssh rpi
