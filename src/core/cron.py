@@ -2,12 +2,9 @@ import kronos
 import graphitesend
 from django.conf import settings
 
+PREFIX = "env_sensor"
 
-
-PREFIX="env_sensor.sense_hat"
-
-
-def get_metrics():
+def get_metrics_from_sensehat():
 
     if settings.SENSE_HAT:
         try:
@@ -23,10 +20,28 @@ def get_metrics():
 
     return data;
 
+def get_metrics_from_dht(sensor_name, pin):
+    import Adafruit_DHT
+    sensor_args = {'dht11': Adafruit_DHT.DHT11,
+                   'dht22': Adafruit_DHT.DHT22,
+                   'am2302': Adafruit_DHT.AM2302}
+
+    sensor = sensor_args[sensor_name]
+    humidity, temperature = Adafruit_DHT.read_retry(sensor, pin);
+    data = {}
+    data['temperature'] = temperature
+    data['humidity'] = humidity
+    return data
+
 @kronos.register('* * * * *')
 def send2graphite():
 
-    g = graphitesend.init(graphite_server='localhost', prefix=PREFIX, system_name='')
-    g.send_dict(get_metrics())
+    g = graphitesend.init(graphite_server='localhost', prefix=PREFIX, system_name='localhost')
+    if settings.DEVICE_ATTACHED == "sense_hat":
+        g.send_dict(get_metrics_from_sensehat())
+    if settings.DEVICE_ATTACHED == "am2302":
+        g.send_dict(get_metrics_from_dht(settings.DEVICE_ATTACHED, settings.DHT_GPIO_PIN))
+
+
 
 

@@ -11,7 +11,7 @@ django_debug=True
 
 [rpis]
 rpi2	ansible_user=pi ansible_ssh_pass=raspberry
-rpi3	ansible_user=pi
+rpi3	ansible_user=pi device_attached="am2302"
 
 [rpis:vars]
 django_debug=True

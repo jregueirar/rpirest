@@ -1,83 +1,90 @@
+
 // GAUGE CHARTS: TEMPERATURE, HUMIDITY AND PRESION
-google.charts.load('current', {'packages':['gauge']});
-google.charts.setOnLoadCallback(drawChartTemperature);
-google.charts.setOnLoadCallback(drawChartHumidity);
-google.charts.setOnLoadCallback(drawChartPressure);
+function myGaugeCharts (pressure) {
+    var updateInterval = 2000;
 
-var updateInterval = 2000;
+    google.charts.load('current', {'packages': ['gauge']});
+    google.charts.setOnLoadCallback(drawChartTemperature);
+    google.charts.setOnLoadCallback(drawChartHumidity);
+    if (pressure) {
+        google.charts.setOnLoadCallback(drawChartPressure);
+    }
 
-function drawChartTemperature() {
-    var idElement = "chart_gauge_temp";
-    var api_rest_url = $("#api_rest_url").attr("data-value");
+    function drawChartTemperature() {
+        var idElement = "chart_gauge_temp";
+        var api_rest_url = $("#api_rest_url").attr("data-value");
 
-    var data = google.visualization.arrayToDataTable([
-         ['Label', 'Value'],
-         ['ºC', 20]
+        var data = google.visualization.arrayToDataTable([
+             ['Label', 'Value'],
+             ['ºC', 20]
+            ]);
+        var options = {
+            greenFrom: 10, greenTo: 40,
+            redFrom: 40, redTo: 50,
+            yellowFrom: 30, yellowTo: 40,
+            majorTicks: [10,20,30,40,50],
+            minorTicks: 5,
+            max: 50
+        };
+        var chart = new google.visualization.Gauge(document.getElementById(idElement));
+
+        setInterval(function() {
+            $.getJSON(api_rest_url + "env_sensors/temperature/", function(result) {
+                data.setValue(0,1,result.Temperature.toFixed(2));
+                chart.draw(data, options);
+                // console.log("Temperature " + result.Temperature.toFixed(2));
+                return true;
+            })
+        }, updateInterval);
+    }
+
+    function drawChartHumidity() {
+        var api_rest_url = $("#api_rest_url").attr("data-value");
+        console.log("api_rest_url: " + api_rest_url);
+        var data = google.visualization.arrayToDataTable([
+            ['Label', 'Value'],
+            ['%H', 20],
         ]);
-    var options = {
-        greenFrom: 10, greenTo: 40,
-        redFrom: 40, redTo: 50,
-        yellowFrom: 30, yellowTo: 40,
-        majorTicks: [10,20,30,40,50],
-        minorTicks: 5,
-        max: 50
-    };
-    var chart = new google.visualization.Gauge(document.getElementById(idElement));
+        var options = {
+            greenFrom: 40, greenTo:60,
+            minorTicks: 5
+        };
+        var chart = new google.visualization.Gauge(document.getElementById('chart_gauge_humidity'));
 
-    setInterval(function() {
-        $.getJSON(api_rest_url + "env_sensors/temperature/", function(result) {
-            data.setValue(0,1,result.Temperature.toFixed(2));
-            chart.draw(data, options);
-            // console.log("Temperature " + result.Temperature.toFixed(2));
-            return true;
-        })
-    }, updateInterval);
+        setInterval(function() {
+            $.getJSON(api_rest_url + "env_sensors/humidity/", function(result) {
+                data.setValue(0,1,result.Humidity.toFixed(2));
+                chart.draw(data, options);
+                // console.log("Humidity " + result.Humidity.toFixed(2));
+                return true;
+            })
+        }, updateInterval);
+    }
+
+    function drawChartPressure() {
+        var api_rest_url = $("#api_rest_url").attr("data-value");
+        var data = google.visualization.arrayToDataTable([
+             ['Label', 'Value'],
+             ['mbar', 20],
+            ]);
+        var options = {
+            minorTicks: 5,
+            max: 2000
+        };
+        var chart = new google.visualization.Gauge(document.getElementById('chart_gauge_pressure'));
+
+        setInterval(function() {
+            $.getJSON(api_rest_url + "env_sensors/pressure/", function(result) {
+                data.setValue(0,1,result.Pressure.toFixed(2));
+                chart.draw(data, options);
+                // console.log("Humidity " + result.Pressure.toFixed(2));
+                return true;
+            })
+        }, updateInterval);
+    }
 }
 
-function drawChartHumidity() {
-    var api_rest_url = $("#api_rest_url").attr("data-value");
-    console.log("api_rest_url: " + api_rest_url);
-    var data = google.visualization.arrayToDataTable([
-        ['Label', 'Value'],
-        ['%H', 20],
-    ]);
-    var options = {
-        greenFrom: 40, greenTo:60,
-        minorTicks: 5
-    };
-    var chart = new google.visualization.Gauge(document.getElementById('chart_gauge_humidity'));
 
-    setInterval(function() {
-        $.getJSON(api_rest_url + "env_sensors/humidity/", function(result) {
-            data.setValue(0,1,result.Humidity.toFixed(2));
-            chart.draw(data, options);
-            // console.log("Humidity " + result.Humidity.toFixed(2));
-            return true;
-        })
-    }, updateInterval);
-}
-
-function drawChartPressure() {
-    var api_rest_url = $("#api_rest_url").attr("data-value");
-    var data = google.visualization.arrayToDataTable([
-         ['Label', 'Value'],
-         ['mbar', 20],
-        ]);
-    var options = {
-        minorTicks: 5,
-        max: 2000
-    };
-    var chart = new google.visualization.Gauge(document.getElementById('chart_gauge_pressure'));
-
-    setInterval(function() {
-        $.getJSON(api_rest_url + "env_sensors/pressure/", function(result) {
-            data.setValue(0,1,result.Pressure.toFixed(2));
-            chart.draw(data, options);
-            // console.log("Humidity " + result.Pressure.toFixed(2));
-            return true;
-        })
-    }, updateInterval);
-}
 
 // chartName: Chart to print, one of the charts in chartsOptions
 // htmlElementId: The id name of the HTML Element where the chart is plotted.
