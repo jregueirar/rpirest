@@ -81,12 +81,3 @@
   file: src={{nginx_sites_available}}/{{nginx_graphite_site}} dest={{nginx_sites_enabled}}/{{nginx_graphite_site}} state=link
   notify: restart nginx
 
-#- name: Graphite | Configure graphite-web
-#  template:
-#    src: templates/graphite-web-settings.py.j2
-#    dest: "{{ graphite_conf_path}}/local_settings.py"
-#    mode: 0664
-#    owner: root
-#    group: root
-#  tags:
-#    - configuration

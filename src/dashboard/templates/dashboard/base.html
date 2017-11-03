@@ -30,7 +30,7 @@
 
 <body class="w3-light-grey">
  {# Useful for code javascript#}
- <div id="api_rest_url" data-value="{{ API_REST_URL }}" hidden></div>
+  <div id="api_rest_url" data-value="{{ API_REST_URL }}" hidden></div>
 
  {%  block body %}
     <!-- Top container -->
@@ -53,12 +53,12 @@
 <nav class="w3-sidebar w3-collapse w3-white w3-animate-left" style="z-index:3;width:300px;" id="mySidebar"><br>
   <div class="w3-container w3-row">
     <div class="w3-col s4">
-        <img src="{% static "dashboard/imgs/Sense-HAT-web.jpg"%}" class="w3-circle w3-margin-right" style="width:100px">
+        <img src="{% static "dashboard/imgs/devices/rpi3.png"%}" class="w3-margin-right" style="width:100px">
     </div>
 
     <div class="w3-col s8 w3-bar">
       {% if user.is_authenticated %}
-      <span>Bienvenido <strong> {{ user }} </strong></span><br>
+      <span class="w3-right">Bienvenido <strong> {{ user }} </strong></span><br>
       {% else %}
       {% endif %}
     </div>
@@ -68,16 +68,28 @@
     <a href="#" class="w3-bar-item w3-button w3-padding-16 w3-hide-large w3-dark-grey w3-hover-black"
        onclick="w3_close()" title="close menu"><i class="fa fa-remove fa-fw"></i>  Close Menu</a>
       {% block menu_block %}
-          <a id="id_menu_env_sensor" href="overview" class="w3-bar-item w3-button w3-padding">
-              <i class="fa fa-dashboard"></i> Sensores Ambientales</a>
-          {% if DEVICE_ATTACHED == "sense_hat" %}
-              <a id="id_menu_led_matrix" href="control_led_matrix" class="w3-bar-item w3-button w3-padding">
-                  <i class="fa fa-cubes fa-fw"></i> Matriz Led</a>
+          <a id='id_leftmenu_home' href="/" class="w3-bar-item w3-button w3-padding"><i class="fa fa-home fa-fw"></i> Inicio</a>
+          <a href="rpi" class="w3-bar-item w3-button w3-padding"><i class="fa fa-linux fa-fw"></i> Sistema RPI</a>
+          {% if "sensehat" in DEVICES_ATTACHED %}
+              <a id="id_leftmenu_sensehat" href="sensehat" class="w3-bar-item w3-button w3-padding">
+                  <i class="fa fa-cubes fa-fw"></i> Sensehat</a>
           {% endif %}
-          <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-bullseye fa-fw"></i> Sistema RPI</a>
-          <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-cog fa-fw"></i> Configuración</a><br><br>
-          <a href="{{ API_REST_URL }}" target="_blank" class="w3-bar-item w3-button w3-padding"><i class="fa fa-exchange fa-fw"></i> API REST</a>
-          <a href="{{ GRAFANA_URL }}" target="_blank" class="w3-bar-item w3-button w3-padding"><i class="fa fa-area-chart fa-fw"></i> Grafana</a>
+          {% if "dht11" in DEVICES_ATTACHED %}
+              <a id="id_leftmenu_dht11" href="dht11" class="w3-bar-item w3-button w3-padding">
+                  <i class="fa fa-thermometer-half fa-fw"></i> DHT11</a>
+          {% endif %}
+          {% if "dht22" in DEVICES_ATTACHED %}
+              <a id="id_leftmenu_dht22" href="dht22" class="w3-bar-item w3-button w3-padding">
+                  <i class="fa fa-thermometer-half fa-fw"></i> DHT22</a>
+          {% endif %}
+          {% if "am2302" in DEVICES_ATTACHED %}
+              <a id="id_leftmenu_am2302" href="am2302" class="w3-bar-item w3-button w3-padding">
+                  <i class="fa fa-thermometer-half fa-fw"></i> AM2302</a>
+          {% endif %}
+
+          <a href="admin" class="w3-bar-item w3-button w3-padding"><i class="fa fa-cog fa-fw"></i> Configuración</a><br><br>
+          <a href="{{ API_REST_URL }}" target="_blank" class="w3-bar-item w3-button w3-padding"><i class="fa fa-exchange fa-fw"></i>API REST</a>
+          <a href="{{ GRAFANA_URL }}" target="_blank" class="w3-bar-item w3-button w3-padding"><i class="fa fa-area-chart fa-fw"></i>Gráficas</a>
           <a href="https://github.com/jregueirar/pirest-sense-hat" target="_blank" class="w3-bar-item w3-button w3-padding">
               <i class="fa fa-github"></i> Código fuente</a>
       {% endblock menu_block %}
@@ -92,11 +104,9 @@
 <div class="w3-main" style="margin-left:300px;margin-top:43px;">
 
   <!-- Header -->
-  {% block content_header %}
-    <header class="w3-container" style="padding-top:22px">
-        <h5><b>{% block content_title %}<i class="fa fa-dashboard"></i> Tutua {% endblock content_title %}</b></h5>
-    </header>
-  {% endblock content_header %}
+    {% block content_header %}
+
+    {% endblock content_header %}
 
 {% block content %}
 
@@ -281,6 +291,8 @@
 </div>
 
 <script>
+
+
 // Get the Sidebar
 var mySidebar = document.getElementById("mySidebar");
 

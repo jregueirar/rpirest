@@ -22,6 +22,15 @@
     force: yes
   notify: reread supervisor
 
+- name: Nginx | Setting Nginx
+  template:
+    src: templates/nginx.conf.j2
+    dest: "{{nginx_sites_available}}/../nginx.conf"
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart nginx
+
 - name: Nginx | Setting site available {{ app_name }}
   template:
     src: templates/nginx.pirest_sense_hat.j2

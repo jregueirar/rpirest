@@ -12,7 +12,7 @@ Class-based views
     2. Add a URL to urlpatterns:  url(r'^$', Home.as_view(), name='home')
 Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
-    2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
+    2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))'/
 """
 from django.contrib import admin
 from django.conf.urls import url, include
@@ -22,9 +22,13 @@ from django.views.generic import TemplateView
 from django.conf import settings
 from django.conf.urls.static import static
 
+
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^api/v1/', include('apirest.urls')),
+    url(r'^api/v1/sensehat/', include('apirest.urls')),
+    url(r'^api/v1/dht11/', include('apirest_dht.urls'), {'device': "dht11"}),
+    url(r'^api/v1/dht22/', include('apirest_dht.urls'), {'device': "dht22"}),
+    url(r'^api/v1/am2302/', include('apirest_dht.urls'), {'device': "am2302"}),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     #url(r'^docs/', include('rest_framework_docs.urls')),
     #url(r'^dashboard/', include('dashboard.urls')),
@@ -32,3 +36,6 @@ urlpatterns = [
     url(r'^', include('dashboard.urls'))
     #url(r'^login$'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+#if settings.DEVICE_ATTACHED == 'sense_hat':
+#    urlpatterns.append(url(r'^api/v1/', include('apirest.urls')))

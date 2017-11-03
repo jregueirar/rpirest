@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "dashboard/base_device.html" %}
 
 {% load staticfiles %}
 
@@ -48,7 +48,7 @@
     		        "g": 0,
     		        "b": 255
 		        };
-		        var service_name = 'led_matrix/pixels/' + x + ',' + y + "/"
+		        var service_name = "{{ type_device }}/led_matrix/pixels/" + x + ',' + y + "/"
 		        $.rpijs.put(service_name, data, function() {
 			        console.log("Set Pixel Callback Done");
 		        });
@@ -91,7 +91,7 @@
     		        "g": 0,
     		        "b": 255
 		        };
-		        var service_name = 'led_matrix/pixels/' + x + ',' + y + "/"
+		        var service_name = "{{ type_device }}/led_matrix/pixels/" + x + ',' + y + "/"
 		        $.rpijs.put(service_name, data, function() {
 			        console.log("Set Pixel Callback Done");
 		        });

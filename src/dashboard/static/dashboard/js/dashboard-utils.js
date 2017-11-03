@@ -1,7 +1,10 @@
 
 // GAUGE CHARTS: TEMPERATURE, HUMIDITY AND PRESION
 function myGaugeCharts (pressure) {
-    var updateInterval = 2000;
+    var updateInterval = $("#id_select_interval").val();
+    var apirest_temperature = $("#apirest_temperature").attr("data-value");
+    var apirest_humidity = $("#apirest_humidity").attr("data-value");
+    var apirest_pressure = $("#apirest_pressure").attr("data-value");
 
     google.charts.load('current', {'packages': ['gauge']});
     google.charts.setOnLoadCallback(drawChartTemperature);
@@ -12,7 +15,6 @@ function myGaugeCharts (pressure) {
 
     function drawChartTemperature() {
         var idElement = "chart_gauge_temp";
-        var api_rest_url = $("#api_rest_url").attr("data-value");
 
         var data = google.visualization.arrayToDataTable([
              ['Label', 'Value'],
@@ -29,8 +31,8 @@ function myGaugeCharts (pressure) {
         var chart = new google.visualization.Gauge(document.getElementById(idElement));
 
         setInterval(function() {
-            $.getJSON(api_rest_url + "env_sensors/temperature/", function(result) {
-                data.setValue(0,1,result.Temperature.toFixed(2));
+            $.getJSON(apirest_temperature, function(result) {
+                data.setValue(0,1,result.result.toFixed(2));
                 chart.draw(data, options);
                 // console.log("Temperature " + result.Temperature.toFixed(2));
                 return true;
@@ -39,8 +41,6 @@ function myGaugeCharts (pressure) {
     }
 
     function drawChartHumidity() {
-        var api_rest_url = $("#api_rest_url").attr("data-value");
-        console.log("api_rest_url: " + api_rest_url);
         var data = google.visualization.arrayToDataTable([
             ['Label', 'Value'],
             ['%H', 20],
@@ -52,8 +52,8 @@ function myGaugeCharts (pressure) {
         var chart = new google.visualization.Gauge(document.getElementById('chart_gauge_humidity'));
 
         setInterval(function() {
-            $.getJSON(api_rest_url + "env_sensors/humidity/", function(result) {
-                data.setValue(0,1,result.Humidity.toFixed(2));
+            $.getJSON(apirest_humidity, function(result) {
+                data.setValue(0,1,result.result.toFixed(2));
                 chart.draw(data, options);
                 // console.log("Humidity " + result.Humidity.toFixed(2));
                 return true;
@@ -62,7 +62,6 @@ function myGaugeCharts (pressure) {
     }
 
     function drawChartPressure() {
-        var api_rest_url = $("#api_rest_url").attr("data-value");
         var data = google.visualization.arrayToDataTable([
              ['Label', 'Value'],
              ['mbar', 20],
@@ -74,8 +73,8 @@ function myGaugeCharts (pressure) {
         var chart = new google.visualization.Gauge(document.getElementById('chart_gauge_pressure'));
 
         setInterval(function() {
-            $.getJSON(api_rest_url + "env_sensors/pressure/", function(result) {
-                data.setValue(0,1,result.Pressure.toFixed(2));
+            $.getJSON(apirest_pressure, function(result) {
+                data.setValue(0,1,result.result.toFixed(2));
                 chart.draw(data, options);
                 // console.log("Humidity " + result.Pressure.toFixed(2));
                 return true;

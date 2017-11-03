@@ -9,35 +9,30 @@ from rest_framework.reverse import reverse
 from django.core.files.storage import default_storage as storage
 from .utils import save_uploaded_file_to_disk
 from django.conf import settings
+from core.common import apirest_response_format
 import logging
-
-
-
-if settings.DEVICE_ATTACHED == "sense_hat":
-    # Useful for testing in vagrant or docker
-    if settings.SENSE_HAT:
-        try:
-            from sense_hat import SenseHat
-        except ImportError:
-            raise SystemExit('[ERROR] Please make sure sense_hat is installed properly')
-
-        # Parche para permitir despliegue sin que sensehat este conectado
-        # Fixme: ¿mejorar para que se vea el error en la APP web?
-        # Si no se pone la excepción falla el despliegue si el sense-hat no esta enchufado
-        try:
-            sense = SenseHat()
-        except OSError:
-            pass
-
-if settings.DEVICE_ATTACHED == "dht22" or settings.DEVICE_ATTACHED == "dht11" or settings.DEVICE_ATTACHED == "am2302":
-    import Adafruit_DHT
-
-    DHT_SENSORS = {'dht11': Adafruit_DHT.DHT11,
-                    'dht22': Adafruit_DHT.DHT22,
-                    'am2302': Adafruit_DHT.AM2302}
 
 # Get an instance of a logger
 logger = logging.getLogger("apirest")
+logger.debug("IS_RPI: " + str(settings.IS_RPI))
+
+# Useful for testing. For example: Deployments in docker or vagrant
+if settings.IS_RPI:
+    try:
+        from sense_hat import SenseHat
+    except ImportError:
+        raise SystemExit('[ERROR] Please make sure sense_hat is installed properly')
+
+    # Parche para permitir despliegue sin que sensehat este conectado
+    # Fixme: ¿mejorar para que se vea el error en la APP web?
+    # Si no se pone la excepción falla el despliegue si el sense-hat no está enchufado
+    try:
+        logger.debug("Initializing sense")
+        sense = SenseHat()
+    except OSError:
+        logger.error("[ERROR] Initializing sensehat. Please make sure sense_hat is installed properly")
+        # Escribimos en base de datos status o en el render...¿Decorador para cada vista?.
+        pass
 
 
 class APIRoot(APIView):
@@ -211,21 +206,20 @@ class GammaView(viewsets.ViewSet):
         response['data'] = {'gamma_tuple': sense.gamma}
         return Response(response)
 
-
 class HumidityView(viewsets.ViewSet):
     """
-    Gets the current temperature in degrees Celsius from the humidity sensor.
+    Gets the current percent of humidity from the humidity sensor.
     """
     def list(self, request):
-        if settings.DEVICE_ATTACHED == 'sense_hat':
-            result = sense.get_humidity()
-        else:
-            result, temperature = Adafruit_DHT.read_retry(DHT_SENSORS[settings.DEVICE_ATTACHED], settings.DHT_GPIO_PIN)
+        result = sense.get_humidity()
+        response = apirest_response_format(request.path, "success", "Humidity (%)", result)
+        return Response(response)
+
 
         response={'url': request.path}
         response['status']="success"
-        response['msg'] = "Sensor " + settings.DEVICE_ATTACHED
-        response['Humidity'] = result
+        response['msg'] = "Sensor Sense Hat "
+        response['result'] = result
         return Response(response)
 
 
@@ -237,15 +231,8 @@ class TemperatureView(viewsets.ViewSet):
     """
 
     def list(self, request):
-        if settings.DEVICE_ATTACHED == 'sense_hat':
-            result = sense.get_temperature_from_humidity()
-        else:
-            humidity, result = Adafruit_DHT.read_retry(DHT_SENSORS[settings.DEVICE_ATTACHED], settings.DHT_GPIO_PIN)
-
-        response={'url': request.path}
-        response['status']="success"
-        response['msg'] = "Sensor " + settings.DEVICE_ATTACHED
-        response['Temperature'] = result
+        result = sense.get_temperature_from_humidity()
+        response = apirest_response_format(request.path, "success", "Temperature in degrees Celsius", result)
         logger.debug('TemperatureView: ' + str(result))
         return Response(response)
 
@@ -257,7 +244,6 @@ class TemperatureFromHumidityView(viewsets.ViewSet):
 
     def list(self, request):
         result = sense.get_temperature_from_humidity()
-
         response={'url': None}
         response['Temperature'] = result
         return Response(response)
@@ -270,9 +256,7 @@ class TemperatureFromPressureView(viewsets.ViewSet):
 
     def list(self, request):
         result = sense.get_temperature_from_pressure()
-
-        response={'url': None}
-        response['Temperature'] = result
+        response = apirest_response_format(request.path, "success", "Temperature in degrees Celsius", result)
         return Response(response)
 
 
@@ -285,9 +269,7 @@ class PressureView(viewsets.ViewSet):
 
     def list(self, request):
         result = sense.get_pressure()
-
-        response={'url': request.path}
-        response['Pressure'] = result
+        response=apirest_response_format(request.path, "success", "Pressure", result)
         return Response(response)
 
 

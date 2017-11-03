@@ -1,67 +1,20 @@
 from apirest import views
 from django.conf.urls import url, include
-from rest_framework import routers
-from rest_framework.routers import Route, DynamicDetailRoute, DynamicListRoute
-from django.conf import settings
+from .models import AttachedDevices
+from core.common import MyRouter
 
-# Custom Route for change suffix and mapping
-class MyRouter(routers.DefaultRouter):
-    routes = [
-        # List route.
-        Route(
-            url=r'^{prefix}{trailing_slash}$',
-            mapping={
-                'get': 'list',
-                'put': 'update',
-                'post': 'create'
-            },
-            name='{basename}-list',
-            initkwargs={'suffix': ''}
-        ),
-        # Dynamically generated list routes.
-        # Generated using @list_route decorator
-        # on methods of the viewset.
-        DynamicListRoute(
-            url=r'^{prefix}/{methodname}{trailing_slash}$',
-            name='{basename}-{methodnamehyphen}',
-            initkwargs={}
-        ),
-        # Detail route.
-        Route(
-            url=r'^{prefix}/{lookup}{trailing_slash}$',
-            mapping={
-                'get': 'retrieve',
-                'put': 'update_element',
-                'patch': 'partial_update',
-                'delete': 'destroy'
-            },
-            name='{basename}-detail',
-            initkwargs={'suffix': 'Value'}
-        ),
-        # Dynamically generated detail routes.
-        # Generated using @detail_route decorator on methods of the viewset.
-        DynamicDetailRoute(
-            url=r'^{prefix}/{lookup}/{methodname}{trailing_slash}$',
-            name='{basename}-{methodnamehyphen}',
-            initkwargs={}
-        ),
-    ]
+router = MyRouter()
 
-
-if settings.DEVICE_ATTACHED == 'sense_hat':
-    router = MyRouter()
-    # router.register(r'users', views.UserViewSet)
-    # router.register(r'groups', views.GroupViewSet)
-    router.register(r'env_sensors/humidity', views.HumidityView, base_name='humidity')
-    router.register(r'env_sensors/temperature', views.TemperatureView,
+if AttachedDevices.objects.filter(type='sensehat'):
+    router.register(r'env_sensor/humidity', views.HumidityView, base_name='humidity')
+    router.register(r'env_sensor/temperature', views.TemperatureView,
                     base_name='temperature')
-    router.register(r'env_sensors/temperature_from_humidity', views.TemperatureFromHumidityView,
+    router.register(r'env_sensor/temperature_from_humidity', views.TemperatureFromHumidityView,
                     base_name='temperature_from_humidity')
-    router.register(r'env_sensors/temperature_from_pressure', views.TemperatureFromPressureView,
+    router.register(r'env_sensor/temperature_from_pressure', views.TemperatureFromPressureView,
                     base_name='temperature_from pressure'),
-    router.register(r'env_sensors/pressure', views.PressureView,
+    router.register(r'env_sensor/pressure', views.PressureView,
                     base_name='pressure')
-
     router.register(r'led_matrix/rotation', views.RotationView,
                     base_name='rotation')
     router.register(r'led_matrix/flip_h', views.FlipHView,
@@ -102,14 +55,7 @@ if settings.DEVICE_ATTACHED == 'sense_hat':
                     base_name='accelerometer')
     router.register(r'imu_sensor/accelerometer_raw', views.AccelerometerRawView,
                     base_name='accelerometer_raw')
-    urlpatterns = [
-        url(r'^', include(router.urls)),
-    ]
 
-if settings.DEVICE_ATTACHED == 'am2302' or settings.DEVICE_ATTACHED == 'dht22' or settings.DEVICE_ATTACHED == 'dht11':
-    dht_router = MyRouter()
-    dht_router.register(r'env_sensors/humidity', views.HumidityView, base_name='humidity')
-    dht_router.register(r'env_sensors/temperature', views.TemperatureView, base_name='temperature')
-    urlpatterns = [
-        url(r'^', include(dht_router.urls)),
-    ]
+urlpatterns = [
+    url(r'^', include(router.urls)),
+]

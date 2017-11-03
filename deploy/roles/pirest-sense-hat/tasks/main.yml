@@ -8,10 +8,10 @@
 - include: configure.yml
   tags: [configuration]
 
-- include: grafana.yml
-  tags: [grafana, configuration]
+#- include: grafana.yml
+#  tags: [grafana, configuration]
 
 - include: dht22.yml
-  when: device_attached== 'dht22' and ansible_lsb.id == 'Raspbian'
+  when: ansible_lsb.id == 'Raspbian'
   tags: [dht]
 

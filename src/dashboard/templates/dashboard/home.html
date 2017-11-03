@@ -1,180 +1,51 @@
-<!-- Probando que resincronice -->
-{% extends "base.html" %}
+{% extends "dashboard/base.html" %}
 
 {% load staticfiles %}
 
-{% block extra-css %}
-    <link rel="stylesheet" href="{% static "dashboard/css/dashboard-utils.css" %}">
-    <link rel="stylesheet" href="{% static "dashboard/css/dygraph.css" %}">
-{% endblock extra-css %}
-
-{% block js %}
-    {{ block.super }}
-    <script type="text/javascript" src="{% static "dashboard/js/dygraph.min.js" %}"></script>
-    <script type="text/javascript" src="{% static "dashboard/js/jquery.graphite.js" %}"></script>
-    <script type="text/javascript" src="{% static "dashboard/js/loader.js" %}"></script>
-    <script type="text/javascript" src="{% static "dashboard/js/dashboard-utils.js" %}"></script>
-{% endblock js %}
-
-{% block content_title %}
-    <i class="fa fa-dashboard"></i> Sensor Ambiental:
-    <a href="https://www.raspberrypi.org/products/sense-hat/">Sense Hat</a>{% endblock content_title %}
-
 {% block content %}
-    <div class="w3-row-padding w3-margin-bottom">
-        <div class="w3-half">
-            <div class="w3-third">
-                <div id="chart_gauge_temp"></div>
+    <div class="w3-row">
+        <div class="w3-row-padding w3-margin-bottom">
+            <div class="w3-quarter">
+
             </div>
-            <div class="w3-third">
-                <div id="chart_gauge_humidity"></div>
+            {% for device in attached_devices_list %}
+{#                <div class="w3-quarter w3-card w3-dark-grey">#}
+                    <div class="w3-quarter">
+                    <div class="w3-container w3-grey w3-card w3-center w3-padding-16">
+                        <h3 class="w3-blue">{{ device.type }}</h3>
+                        {# ¿How can I automated?#}
+                        {% if device.type == "rpi" %}
+                            <img src={% static "dashboard/imgs/devices/rpi3.png"%} alt="Avatar" style="width:70%">
+                        {% endif %}
+                        {% if device.type == "sensehat" %}
+                            <img src={% static "dashboard/imgs/devices/sensehat.png"%} alt="Avatar" style="width:70%">
+                        {% endif %}
+                        {% if device.type == "am2302" %}
+                            <img src={% static "dashboard/imgs/devices/am2302.png"%} alt="Avatar" style="width:70%">
+                        {% endif %}
+                        {% if device.type == "dht11" %}
+                            <img src={% static "dashboard/imgs/devices/dht11.png"%} alt="Avatar" style="width:70%">
+                        {% endif %}
+                        {% if device.type == "dht22" %}
+                            <img src={% static "dashboard/imgs/devices/dht22.png"%} alt="Avatar" style="width:70%">
+                        {% endif %}
+                        <div class="w3-clear"></div>
+                        <a class="w3-button w3-border w3-round-xlarge w3-teal" href="{{ device.type }}">Dashboard</a>
+                    </div>
+                </div>
+            {% endfor %}
+            <div class="w3-quarter">
+                <a href="admin/apirest/attacheddevices/">
+                <div class="w3-right w3-container w3-teal w3-padding-16 w3-button">
+                    <div class="w3-center"><i class="fa fa-plus w3-xxxlarge" aria-hidden="true"></i></div>
+{#                    <a href="https://www.w3schools.com" class="w3-button w3-container w3-black">Link Button</a>#}
+                      <h3>Dispositivos</h3>
+                </div>
+                    </a>
             </div>
-            <div class="w3-third">
-                <div id="chart_gauge_pressure"></div>
-            </div>
-        </div>
-        <div class="w3-half">
-            <b>Sensor:</b> <select id="id_select_sensor">
-                <option selected="selected" value="temperature">Temperatura</option>
-                <option value="humidity">Humedad</option>
-                {%  if DEVICE_ATTACHED == "sense_hat" %}
-                    <option value="pressure">Presión</option>
-                {% endif %}
-            </select>
-            <i class="fa fa-refresh"></i>
-            <select id="id_select_interval">
-                <option value="1000">1 seg</option>
-                <option selected="selected" value="2000">2 seg</option>
-                <option value="5000">5 seg</option>
-                <option value="10000"> 10 seg</option>
-                <option value="30000"> 30 seg</option>
-            </select>
-            <div id="chart_realtime"></div>
         </div>
     </div>
-
-    <div class="w3-container w3-teal">
-        <div class="w3-half">
-            <h5><b> <i class="fa fa-calendar" aria-hidden="true"></i> Histórico Mediciones</b></h5>
-        </div>
-        <div class="w3-half">
-            <button id="id_button_day" class="button-time w3-button w3-border w3-round-xlarge" value=-1>Día</button>
-            <button id="id_button_week" class="button-time w3-button w3-border w3-round-xlarge" value=-7>Semana</button>
-            <button id="id_button_month" class="button-time w3-button w3-border w3-round-xlarge" value=-31>Mes</button>
-            <button id="id_button_year" class="button-time w3-button w3-border w3-round-xlarge" value=-365>Año</button>
-            </h5>
-        </div>
-    </div>
-
-    <div class="w3-row-padding w3-margin-top">
-        <div class="w3-half">
-            <div id="chart_temp"></div>
-        </div>
-        <div class="w3-half">
-            <div id="chart_humidity"></div>
-        </div>
-    </div>
-
-    <div class="w3-row-padding w3-margin-top w3-container">
-        <div class="w3-half">
-            <div id="chart_pressure"></div>
-        </div>
-        <div class="w3-half w3-container container">
-        </div>
-    </div>
-
     <script>
-        $(document).ready(function () {
-            $('#id_menu_env_sensor').addClass("w3-blue");
-
-            if ("{{ DEVICE_ATTACHED }}" == "sense_hat" ) {
-                myGaugeCharts(true)
-            }else{
-                myGaugeCharts(false)
-            }
-
-            var api_rest_url = $("#api_rest_url").attr("data-value");
-            console.log("api_rest_url: " + api_rest_url);
-
-            var selectSensor = $("#id_select_sensor");
-            var selectRefresh = $("#id_select_interval");
-            var divIdChart = "chart_realtime";
-            var chartConfiguration = {
-                'temperature': {
-                    url: "{{ API_REST_URL }}env_sensors/temperature", labels: ['t', 'Temperatura'],
-                    ylabel: "Temperatura (ºC)", key: "Temperature"
-                },
-                'humidity': {
-                    url: "{{ API_REST_URL }}env_sensors/humidity", labels: ['h', 'Humedad'],
-                    ylabel: "Humedad (%)", key: "Humidity"
-                }
-            };
-
-            if ("{{ DEVICE_ATTACHED }}" == "sense_hat") {
-                chartConfiguration["pressure"] = {
-                    url: "{{ API_REST_URL }}env_sensors/pressure", labels: ['p', 'Presión'],
-                    ylabel: "Presión", key: "Pressure"
-                }
-            }
-
-            var chart = new serialChart(selectSensor.val(), divIdChart, selectRefresh.val(),
-                    chartConfiguration);
-
-            selectSensor.on("change", function () {
-                chart.chartName = selectSensor.val();
-                clearInterval(chart.intervalId)
-                chart = new serialChart(selectSensor.val(), divIdChart, selectRefresh.val(),
-                        chartConfiguration);
-            });
-
-            selectRefresh.on("change", function () {
-                chart.refreshInterval = selectRefresh.val();
-                chart.replot();
-            });
-
-
-            // *************************** HISTORICO *******************************************************
-            $("#id_button_day").addClass("w3-grey");
-            var graphiteFrom = $("#id_button_day").val();
-
-            var targetTemp = "{{ GRAPHITE_URL }}/render?target=env_sensor.localhost.temperature";
-            var targetHumidity = "{{ GRAPHITE_URL }}/render?target=env_sensor.localhost.humidity";
-            dygraphAttrsTemp = {
-                labels: ["Fecha", "Temperatura"],
-                legend: 'always',
-                showRangeSelector: false,
-                ylabel: 'Temperatura (ºC)'
-            };
-            dygraphAttrsHumidity = {
-                labels: ["Date", "Humedad"],
-                legend: 'always',
-                showRangeSelector: false,
-                ylabel: 'Humedad(%)'
-            };
-            graphiteTemp = new graphiteSerialChart(targetTemp, graphiteFrom, "chart_temp", dygraphAttrsTemp);
-            graphiteHumidity = new graphiteSerialChart(targetHumidity, graphiteFrom, "chart_humidity", dygraphAttrsHumidity);
-
-            if ( "{{ DEVICE_ATTACHED }}" == "sense_hat") {
-                var targetPressure = "{{ GRAPHITE_URL }}/render?target=env_sensor.localhost.pressure";
-                dygraphAttrsPressure = {
-                    labels: ["Date", "Presión"],
-                    legend: 'always',
-                    showRangeSelector: false,
-                    ylabel: 'Presión',
-                };
-                graphitePressure = new graphiteSerialChart(targetPressure, graphiteFrom, "chart_pressure", dygraphAttrsPressure);
-            }
-
-            $(".button-time").on("click", function () {
-                $(".button-time").removeClass("w3-grey");
-                $(this).addClass("w3-grey");
-                graphiteFrom = $(this).val();
-                graphiteTemp.replot(graphiteFrom);
-                graphiteHumidity.replot(graphiteFrom);
-                if ("{{ DEVICE_ATTACHED }}" == "sense_hat") {
-                    graphitePressure.replot(graphiteFrom);
-                }
-            });
-        });
+          $('#id_leftmenu_home').addClass("w3-blue")
     </script>
 {% endblock content %}
