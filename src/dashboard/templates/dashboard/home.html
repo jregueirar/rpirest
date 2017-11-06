@@ -30,8 +30,10 @@
                             <img src={% static "dashboard/imgs/devices/dht22.png"%} alt="Avatar" style="width:70%">
                         {% endif %}
                         <div class="w3-clear"></div>
-                        <a class="w3-button w3-border w3-round-xlarge w3-teal" href="{{ device.type }}">Dashboard</a>
+                        <a class="w3-button w3-teal" href="{{ device.type }}">Dashboard</a>
+                        <a class="w3-button w3-teal" href="{{ API_REST_URL }}{{ device.type }}">APIREST</a>
                     </div>
+
                 </div>
             {% endfor %}
             <div class="w3-quarter">
