@@ -24,7 +24,7 @@
 {#    {{ block.super }}#}
     {# Usefull for jquery code #}
     <div id="apirest_temperature" data-value="{{ API_REST_URL }}{{ resource_temperature }}"  hidden></div>
-    <div id="apirest_humidty" data-value="{{ API_REST_URL }}{{ resource_humidity }}" hidden></div>
+    <div id="apirest_humidity" data-value="{{ API_REST_URL }}{{ resource_humidity }}" hidden></div>
     <div id="apirest_pressure" data-value="{{ API_REST_URL }}{{ resource_pressure }}" hidden></div>
 
     <div class="w3-row-padding w3-margin-bottom">
@@ -63,7 +63,7 @@
             <h5><b> <i class="fa fa-calendar" aria-hidden="true"></i> Histórico Mediciones</b></h5>
         </div>
         <div class="w3-half">
-            <button id="id_button_day" class="button-time w3-button w3-border w3-round-xlarge" value=-1>Día</button>
+            <button id="clear" class="button-time w3-button w3-border w3-round-xlarge" value=-1>Día</button>
             <button id="id_button_week" class="button-time w3-button w3-border w3-round-xlarge" value=-7>Semana</button>
             <button id="id_button_month" class="button-time w3-button w3-border w3-round-xlarge" value=-31>Mes</button>
             <button id="id_button_year" class="button-time w3-button w3-border w3-round-xlarge" value=-365>Año</button>

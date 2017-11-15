@@ -3,7 +3,7 @@
 device_attached: sense_hat # Posible values: sense-hat, dht22, dht11 or am2302
 
 ### APP DJANGO SETTINGS VARIABLES
-api_rest_url: "api/v1/"
+api_rest_url: "/api/v1/"
 django_debug: False
 sense_hat: True
 graphite_url: "http://{{ ansible_fqdn }}:8080"

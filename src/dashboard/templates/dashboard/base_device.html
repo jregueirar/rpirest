@@ -1,6 +1,8 @@
 {% extends "dashboard/base.html" %}
 {% load staticfiles %}
 {% block content %}
+
+
     {% block content_header %}
          <div class="w3-bar w3-teal">
             <div class="w3-dropdown-hover">
@@ -20,9 +22,7 @@
                 <a href="#" class="w3-bar-item w3-button">Sensores de Entorno</a>
                 <a href="#" class="w3-bar-item w3-button">Gráficas</a>
             {% endif %}
-             <a href="/{{ API_REST_URL }}{{ type_device }}" class="w3-bar-item w3-button">APIREST</a>
+             <a href="{{ API_REST_URL }}{{ type_device }}" class="w3-bar-item w3-button">APIREST</a>
          </div>
     {% endblock content_header %}
 {% endblock content %}
-
-http://rpi2/sensehat/api/v1/sensehat

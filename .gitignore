@@ -4,3 +4,4 @@ __pycache__
 .idea
 .vagrant
 collected_static
+.gitignore

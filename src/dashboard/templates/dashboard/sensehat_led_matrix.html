@@ -3,100 +3,90 @@
 {% load staticfiles %}
 
 {% block extra-css %}
-     <link rel="stylesheet" href="{% static "dashboard/css/led_matrix.css" %}">
 {%  endblock extra-css %}
 
-{% block content_title %} Overview {% endblock content_title %}
+{% block js %}
+    {{ block.super }}
+    <script type="text/javascript" src="{% static "dashboard/js/dashboard-ledmatrix.js" %}"></script>
+{% endblock js %}
 
 {% block content %}
+    <div id="type_device" data-value="{{ type_device }}"></div>
+    <div id="api_rest_url" data-value="{{ API_REST_URL }}"></div>
+    <div id="type_device" data-value="sensehat" hidden></div>
     <div class="w3-row">
-    <div class="w3-half">
-        <div id="led_matrix">
-            <object id="svgObject" type="image/svg+xml" data="{% static "dashboard/imgs/sense_hat_plano2.svg" %}">
-                Kiwi Logo <!-- fallback image in CSS -->
-            </object>
+        <div class="w3-half">
+            <div id="led_matrix">
+                <object id="svgObject" type="image/svg+xml" data="{% static "dashboard/imgs/sense_hat_plano2.svg" %}">
+                    Kiwi Logo <!-- fallback image in CSS -->
+                </object>
+            </div>
+            <p></p>
+
         </div>
-    </div>
     <div class="w3-half">
+        <p></p>
+        <div class="w3-container w3-teal">
+            <p> Color de Led: <input type="color" name="pixel_color" value="#0000FF" id="led_colour">
+                Color de Fondo: <input type="color" name="pixel_color" value="#fdf9e6" id="background_colour">
+                Baja Intesidad Lumínica: <input id="ledmatrix_lowlight" class="w3-check" type="checkbox" checked="checked">
+            </p>
+            <p>
+                Selecciona Led: X <input type="number" name="x" min="0" max="7" id="led_coord_x" value="0">
+                Y: <input type="number" name="y" min="0" max="7" id="led_coord_y" value="0">
+            </p>
+        </div>
+        <p></p>
+{#        <div class="w3-container">#}
+        <div class="w3-row">
+            <div id="ledmatrix_clear" class="w3-button w3-white w3-border w3-border-green"><i class="fa fa-table" aria-hidden="true"> Apagar Todos</i></div>
+            <div id="ledmatrix_on_all" class="w3-button w3-white w3-border w3-border-green"><i class="fa fa-table" aria-hidden="true"> Encender Todos</i></div>
+        </div>
+        <div class="w3-row">
+            <div id="ledmatrix_off_led" class="w3-button w3-white w3-border w3-border-green"><i class="fa fa-lightbulb-o" aria-hidden="true"> Apagar Seleccionado</i></div>
+            <div id="ledmatrix_on_led" class="w3-button w3-white w3-border w3-border-green"><i class="fa fa-lightbulb-o" aria-hidden="true"> Encender Seleccionado</i></div>
+        </div>
+        <div class="w3-row">
+{#            <div class="w3-quarter">#}
+                <div id="ledmatrix_rotation" class="w3-button w3-white w3-border w3-border-green w3-tooltip">
+                    Rotar Eje:
+                    <select id="angle_rotation">
+                        <option selected="selected" value="0">0º</option>
+                        <option value="90">90º</option>
+                        <option value="180">180º</option>
+                        <option value="270">270º</option>
+                    </select>
+                </div>
+                <div id="ledmatrix_fliph" class="w3-button w3-white w3-border w3-border-green">Voltear H</div>
+                <div id="ledmatrix_flipv" class="w3-button w3-white w3-border w3-border-green">Voltear V</div>
+{#            </div>#}
+        </div>
+        <div class="w3-row">
+            <div id="ledmatrix_letter" class="w3-button w3-white w3-border w3-border-green">Un Carácter:</div>
+            <input type="text" id="input_letter" maxlength="1">
+        </div>
+        <div class="w3-row">
+            <div id="ledmatrix_message" class="w3-button w3-white w3-border w3-border-green"><i class="fa fa-comment" aria-hidden="true"></i>Mensaje</div>
+            <input type="text" id="input_letter">
+        </div>
+        <div class="w3-row">
+            <p>Ayuda:</p>
+            <ul>
+                <li>Al hacer click directamente sobre un led, este se encenderá del color seleccionado. Además, se actulizarán las
+                    coordenadas X e Y con las coordenadas del led sobre el que se hizo click.</li>
+                <li>Color de fondo solo es usado en las funcionalidades de carácter y mensaje. El color #fdf9e6, corresponde a apagado
+                en la matrix de Leds.</li>
+                <li>Rotar Eje. Si usas la RPi al revés o hacia los lados, puede usar esta función para corregir la orientación de
+                la imagen que se muestra. El ángulo 0º es con el puerto HDMI Raspberry Pi hacia abajo, tal y como se muestra en esta
+                pantalla.</li>
+            </ul>
+
+        </div>
+{#        </div>#}
     </div>
     </div>
     <script>
-
-        $("#id_menu_led_matrix").addClass("w3-blue");
-
-        $(function () {
-            $('.led').click(function(event) {
-                var output = "User click on: " + event.pageX + "/" + event.pageY;
-                $('#display').text(output);
-            });
-            $.rpijs.init("../api/v1/", "admin", "admin");
-        });
-
-        window.onload=function() {
-
-            $.rpijs.init("../api/v1/", "admin", "admin");
-
-            var svgDoc = $('#svgObject')[0].contentDocument; // Get the document object for the SVG
-            $('.led', svgDoc).click(function(event){
-                var output = "User click on: " + event.pageX + "/" + event.pageY;
-                $('#display').text(output);
-                $(this, svgDoc).css('fill','blue');
-                var x =$(this, svgDoc).attr('x');
-                var y =$(this, svgDoc).attr('y');
-                var data={
-    		        "r": 0,
-    		        "g": 0,
-    		        "b": 255
-		        };
-		        var service_name = "{{ type_device }}/led_matrix/pixels/" + x + ',' + y + "/"
-		        $.rpijs.put(service_name, data, function() {
-			        console.log("Set Pixel Callback Done");
-		        });
-            });
-        };
-
+        $("#id_leftmenu_sensehat").addClass("w3-blue");
     </script>
 {% endblock content %}
 
-{% block prueba %}
-    <div id="display">Another Demo</div>
-    <div id="led_matrix">
-        <object id="svgObject" type="image/svg+xml" data="{% static "dashboard/imgs/sense_hat_plano2.svg" %}" border="3">
-            Kiwi Logo <!-- fallback image in CSS -->
-        </object>
-    </div>
-
-    <script>
-        $(function () {
-            $('.led').click(function(event) {
-                var output = "User click on: " + event.pageX + "/" + event.pageY;
-                $('#display').text(output);
-            });
-            $.rpijs.init("../api/v1/", "admin", "admin1234");
-        });
-
-        window.onload=function() {
-
-            $.rpijs.init("../api/v1/", "admin", "admin1234");
-
-            var svgDoc = $('#svgObject')[0].contentDocument; // Get the document object for the SVG
-            $('.led', svgDoc).click(function(event){
-                var output = "User click on: " + event.pageX + "/" + event.pageY;
-                $('#display').text(output);
-                $(this, svgDoc).css('fill','blue');
-                var x =$(this, svgDoc).attr('x');
-                var y =$(this, svgDoc).attr('y');
-                var data={
-    		        "r": 0,
-    		        "g": 0,
-    		        "b": 255
-		        };
-		        var service_name = "{{ type_device }}/led_matrix/pixels/" + x + ',' + y + "/"
-		        $.rpijs.put(service_name, data, function() {
-			        console.log("Set Pixel Callback Done");
-		        });
-            });
-        };
-
-    </script>
-{% endblock prueba %}

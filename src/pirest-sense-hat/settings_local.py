@@ -1,5 +1,5 @@
 GRAPHITE_URL = "http://rpi3:8080"
-API_REST_URL = "api/v1/"
+API_REST_URL = "/api/v1/"
 
 DEBUG = True
 SENSE_HAT = True

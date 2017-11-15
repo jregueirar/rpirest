@@ -27,9 +27,9 @@ class XYSerializer(serializers.Serializer):
 
 
 class ColorSerializer(serializers.Serializer):
-    r = serializers.IntegerField(min_value=0, max_value=255, default=0)
-    g = serializers.IntegerField(min_value=0, max_value=255, default=0)
-    b = serializers.IntegerField(min_value=0, max_value=255, default=0)
+    r = serializers.IntegerField(min_value=0, max_value=255, default=0, help_text="Optional. Values range between 0 and 255. Default 0.")
+    g = serializers.IntegerField(min_value=0, max_value=255, default=0, help_text="Optional. Values range between 0 and 255. Default 0.")
+    b = serializers.IntegerField(min_value=0, max_value=255, default=0, help_text="Optional. Values range between 0 and 255. Default 0.")
 
 
 class PixelSerializer(XYSerializer):
@@ -53,11 +53,26 @@ class AngleSerializer(RedrawSerializer):
 class ImageSerializer(RedrawSerializer):
     img = serializers.ImageField()
 
-# Fixme Improve validator of text_colour y back_colour
+# Fixme Improve validator TexColour, error message,..
+# http://www.django-rest-framework.org/topics/html-and-forms/#rendering-forms, ¿Mejorarlo?.
 #   Limit the list field to 3 elements.
 class TextCommonSerializer(serializers.Serializer):
-    text_colour = serializers.ListField(child=serializers.IntegerField(min_value=0, max_value=255), default=[255,255,255])
-    back_colour = serializers.ListField(child=serializers.IntegerField(min_value=0, max_value=255), default=[0, 0, 0])
+    text_colour = ColorSerializer(help_text="Optional")
+    back_colour = ColorSerializer()
+
+        # serializers.ListField(child=serializers.IntegerField(default=0, min_value=0, max_value=255),
+        #                                 min_length=3,
+        #                                 max_length=3,
+        #                                 default=[255, 255, 255],
+        #                                 help_text="Optional. Default [255,255,255]",
+        #                                 style={'base_template': 'list_fieldset.html'}
+        #                                 )
+    # back_colour = serializers.ListField(child=serializers.IntegerField(min_value=0, max_value=255),
+    #                                     min_length=3,
+    #                                     max_length=3,
+    #                                     default=[0, 0, 0],
+    #                                     help_text="Optional",
+    #                                     style={'base_template': 'list_fieldset.html'})
 
 
 class LetterSerializer(TextCommonSerializer):
