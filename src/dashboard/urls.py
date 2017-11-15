@@ -6,6 +6,7 @@ urlpatterns = [
     url(r'^$', views.home, name='home'),
     url(r'^rpi$', views.rpi, {'type_device': 'rpi'}),
     url(r'^sensehat$', views.sensehat, {'type_device': 'sensehat'}),
+    url(r'^sensehat/env_sensors$', views.sensehat, {'type_device': 'sensehat'}),
     url(r'^sensehat/led_matrix$', views.sensehat_led_matrix, {'type_device': 'sensehat'}),
     url(r'^dht11$', views.dht, {'type_device': 'dht11'}),
     url(r'^dht22$', views.dht, {'type_device': 'dht22'}),

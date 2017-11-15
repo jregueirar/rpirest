@@ -51,12 +51,19 @@ class APIRoot(APIView):
 class RotationView(viewsets.ViewSet):
     """
     If you're using the Pi upside down or sideways you can use this function to correct the orientation of the image being shown.
+
+    Parameter; Type; Valid values;Explanation
+
+    r; Integer; 0 90 180 270; The angle to rotate the LED matrix though. 0 is with the Raspberry Pi HDMI port facing downwards.
+
+    redraw; Boolean; True False; Whether or not to redraw what is already being displayed on the LED matrix. Defaults to True
     """
     serializer_class = AngleSerializer
 
     def update(self, request, pk=None):
         serializer = AngleSerializer(data=request.data)
         if serializer.is_valid():
+            logger.debug("Redraw: " + str(serializer.data['redraw']))
             sense.set_rotation(serializer.data['angle'], serializer.data['redraw'])
             response = {}
             response['status'] = "success"
@@ -64,7 +71,7 @@ class RotationView(viewsets.ViewSet):
             return Response(response, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
+# Voltear Horizontalmente: https://docs.gimp.org/es/gimp-layer-flip-horizontal.html
 class FlipHView(viewsets.ViewSet):
     serializer_class = RedrawSerializer
 
@@ -77,6 +84,7 @@ class FlipHView(viewsets.ViewSet):
 
 
 # ¿Ponemos en data el atributo redraw?
+# https://docs.gimp.org/es/gimp-layer-flip-vertical.html
 class FlipVView(viewsets.ViewSet):
     serializer_class = RedrawSerializer
 
@@ -112,6 +120,8 @@ class ClearView(viewsets.ViewSet):
             response['data'] = serializer.data
             return Response(response, status=status.HTTP_200_OK)
 
+def hash_colour_2_list(hash):
+    return [hash['r'], hash['g'], hash['b']];
 
 class ShowMessageView(viewsets.ViewSet):
     """
@@ -125,11 +135,11 @@ class ShowMessageView(viewsets.ViewSet):
         if serializer.is_valid(raise_exception=True):
             sense.show_message(request.data['text_string'],
                                 scroll_speed=serializer.data['scroll_speed'],
-                                text_colour=serializer.data['text_colour'],
-                                back_colour=serializer.data['back_colour']
-                                )
+                                text_colour=hash_colour_2_list(serializer.data['text_colour']),
+                                back_colour=hash_colour_2_list(serializer.data['back_colour'])
+                               )
             response = {'status': 'success'}
-            response['url'] = request.path   # FIXME ¿Redundante? ¿Lo dejamos?
+            response['url'] = request.path
             response['data'] = serializer.data
             return Response(response, status=status.HTTP_200_OK)
 
@@ -141,13 +151,12 @@ class ShowLetterView(viewsets.ViewSet):
         print(request.data)
         if serializer.is_valid(raise_exception=True):
             print(serializer.validated_data)
-            #FIXME Waiting to finish the schroll :-(
             sense.show_letter(serializer.validated_data['letter'],
-                              text_colour=serializer.data['text_colour'],
-                              back_colour=serializer.validated_data['back_colour']
+                              text_colour=hash_colour_2_list(serializer.data['text_colour']),
+                              back_colour=hash_colour_2_list(serializer.data['back_colour'])
                               )
             response = {'status': 'success'}
-            response['url'] = request.path   # FIXME ¿Redundante? ¿Lo dejamos?
+            response['url'] = request.path
             response['data'] = serializer.data
             return Response(response, status=status.HTTP_200_OK)
 
@@ -164,7 +173,7 @@ class LowLightView(viewsets.ViewSet):
         if serializer.is_valid(raise_exception=True):
             sense.low_light = serializer.data['low_light']
             response = {'status': 'success'}
-            response['url'] = request.path   # FIXME ¿Redundante? ¿Lo dejamos?
+            response['url'] = request.path   # FIXME ¿Redundante? ¿Lo dejamos?. Crear un formato de respuesta unico.
             response['data'] = serializer.data
             return Response(response, status=status.HTTP_200_OK)
 

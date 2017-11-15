@@ -48,14 +48,13 @@
     // a la Matrix de Led SVG.
     // FIXME ¿ le pasamos la lista de Leds ? 0
     $.sensehat.syncSVG = function(svgDoc) {
-        $.rpijs.get("led_matrix/pixels",function(result){
+        $.rpijs.get("led_matrix/pixels/",function(result){
             var hex;
             var r=0, g=1, b=2;
             ledList = result.pixel_list;
-            console.log("ledList.lenght: " + ledList.length);
+            console.log("[INFO] Sync SVG Image");
             for (var i = 0; i < ledList.length; i++) {
                 hex = $.sensehat.rgbToHex(ledList[i][r], ledList[i][g], ledList[i][b]);
-                console.log("HEX: " + hex);
                 if (hex == "#000000") {
                     hex = $.sensehat.LED_OFF
                 }

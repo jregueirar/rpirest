@@ -22,12 +22,15 @@
                 </object>
             </div>
             <p></p>
-            <p>Al hacer click sobre un led, este se encenderá del color seleccionado.</p>
+
         </div>
     <div class="w3-half">
         <p></p>
         <div class="w3-container w3-teal">
-            <p>Selecciona Color: <input type="color" name="pixel_color" value="#0000FF" id="led_color"></p>
+            <p> Color de Led: <input type="color" name="pixel_color" value="#0000FF" id="led_colour">
+                Color de Fondo: <input type="color" name="pixel_color" value="#fdf9e6" id="background_colour">
+                Baja Intesidad Lumínica: <input id="ledmatrix_lowlight" class="w3-check" type="checkbox" checked="checked">
+            </p>
             <p>
                 Selecciona Led: X <input type="number" name="x" min="0" max="7" id="led_coord_x" value="0">
                 Y: <input type="number" name="y" min="0" max="7" id="led_coord_y" value="0">
@@ -45,11 +48,39 @@
         </div>
         <div class="w3-row">
 {#            <div class="w3-quarter">#}
-                <div class="w3-button w3-white w3-border w3-border-green">Clear</div>
-                <div class="w3-button w3-white w3-border w3-border-green">Button</div>
-                <div class="w3-button w3-teal w3-border">Button</div>
-                <div class="w3-button w3-white w3-border w3-border-green w3-round-large">Button</div>
+                <div id="ledmatrix_rotation" class="w3-button w3-white w3-border w3-border-green w3-tooltip">
+                    Rotar Eje:
+                    <select id="angle_rotation">
+                        <option selected="selected" value="0">0º</option>
+                        <option value="90">90º</option>
+                        <option value="180">180º</option>
+                        <option value="270">270º</option>
+                    </select>
+                </div>
+                <div id="ledmatrix_fliph" class="w3-button w3-white w3-border w3-border-green">Voltear H</div>
+                <div id="ledmatrix_flipv" class="w3-button w3-white w3-border w3-border-green">Voltear V</div>
 {#            </div>#}
+        </div>
+        <div class="w3-row">
+            <div id="ledmatrix_letter" class="w3-button w3-white w3-border w3-border-green">Un Carácter:</div>
+            <input type="text" id="input_letter" maxlength="1">
+        </div>
+        <div class="w3-row">
+            <div id="ledmatrix_message" class="w3-button w3-white w3-border w3-border-green"><i class="fa fa-comment" aria-hidden="true"></i>Mensaje</div>
+            <input type="text" id="input_letter">
+        </div>
+        <div class="w3-row">
+            <p>Ayuda:</p>
+            <ul>
+                <li>Al hacer click directamente sobre un led, este se encenderá del color seleccionado. Además, se actulizarán las
+                    coordenadas X e Y con las coordenadas del led sobre el que se hizo click.</li>
+                <li>Color de fondo solo es usado en las funcionalidades de carácter y mensaje. El color #fdf9e6, corresponde a apagado
+                en la matrix de Leds.</li>
+                <li>Rotar Eje. Si usas la RPi al revés o hacia los lados, puede usar esta función para corregir la orientación de
+                la imagen que se muestra. El ángulo 0º es con el puerto HDMI Raspberry Pi hacia abajo, tal y como se muestra en esta
+                pantalla.</li>
+            </ul>
+
         </div>
 {#        </div>#}
     </div>
