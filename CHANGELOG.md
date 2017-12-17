@@ -1,5 +1,6 @@
-## v0.401
+## v0.401 (2017-12-17)
  - The script showTempRest.py. Example, using the HTTP-REST APIs of two devices.
+
 ## v0.4
  - It is used yaml files for the configuration of the devices conenneted to the RPi. Maybe in the future pass to json.   
 
