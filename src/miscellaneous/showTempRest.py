@@ -1,3 +1,9 @@
+#
+# Example of REST client writted in python.
+# - First, it read the temperature and humidity from the am2302 sensor.
+# - Last, it show the temperature and humitity in the sense-hat sensor screen
+#
+
 from unipath import Path
 import requests
 import yaml
