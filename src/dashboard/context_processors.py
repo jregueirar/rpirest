@@ -1,5 +1,5 @@
 from django.conf import settings
-from apirest.models import AttachedDevices
+from .models import AttachedDevices
 
 
 def global_settings(request):

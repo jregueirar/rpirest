@@ -45,11 +45,13 @@ INSTALLED_APPS = [
     'dashboard',
     'core',
     'kronos',
-    'apirest'
+    'apirest',
+    'apirest_dht'
 ]
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAdminUser',),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 10
 }
 
@@ -136,8 +138,8 @@ USE_TZ = True
 #                           STATIC SETTINGS                             #
 #                                                                       #
 #########################################################################
-PROJECT_ROOT = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-STATIC_ROOT = os.path.join(PROJECT_ROOT, 'collected_static')
+# PROJECT_ROOT = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+STATIC_ROOT = os.path.join(BASE_DIR, 'collected_static')
 
 STATIC_URL = '/static/'
 

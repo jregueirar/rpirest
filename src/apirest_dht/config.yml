@@ -1,0 +1,11 @@
+connected: yes                 # yes or no
+model: am2302
+
+gpio:
+  data: 4
+
+graphite:
+  servers:
+    - localhost
+  prefix: localhost.am2302.env_sensor
+

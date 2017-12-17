@@ -1,6 +1,5 @@
 from apirest_dht import views
 from django.conf.urls import url, include
-from apirest.models import AttachedDevices
 from core.common import MyRouter
 
 router = MyRouter()

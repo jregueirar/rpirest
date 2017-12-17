@@ -1,0 +1,8 @@
+model: sensehat
+connected: yes                 
+
+graphite:
+  servers:
+    - localhost
+  prefix: localhost.sensehat.env_sensor
+
