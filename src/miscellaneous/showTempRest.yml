@@ -18,3 +18,5 @@ humidity:
 show_message:
     api: 'http://rpi2/api/v1/sensehat/led_matrix/show_message/'
 
+# Time in seconds
+sleep_loop: 5
