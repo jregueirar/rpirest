@@ -1,6 +1,5 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from apirest.models import AttachedDevices
 import logging
 
 logger = logging.getLogger("dashboard")

@@ -1,3 +1,6 @@
+## v0.30??
+ - It is used yaml files for the configuration of the devices conenneted to the RPi. Maybe in the future pass to json.   
+
 ## v0.302 (2017-08-24)
  - Fix errors in the deployment of graphite. 
 
