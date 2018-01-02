@@ -1,6 +1,0 @@
-[vagrant_machines]
-pirest01 ansible_host=192.168.4.10
-
-[vagrant_machines:vars]
-ansible_user=vagrant
-ansible_ssh_pass=vagrant

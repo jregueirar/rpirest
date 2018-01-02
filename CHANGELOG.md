@@ -1,3 +1,6 @@
+## v.5 (2018-01-02
+  - Divide and win. The ansible code is moved to other git project
+
 ## v0.401 (2017-12-17)
  - The script showTempRest.py. Example, using the HTTP-REST APIs of two devices.
 
