@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 
 import os
 
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -23,7 +24,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '_f@2lmna54_vpo*+y^b-*$jsyu$a2&hrxxn)s3b@^#n9a$opdd'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -42,7 +43,8 @@ INSTALLED_APPS = [
     'django_extensions',
     'rest_framework_docs',
     'dashboard',
-    'core'
+    'core',
+    'kronos'
 ]
 
 REST_FRAMEWORK = {
@@ -76,6 +78,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'dashboard.context_processors.global_settings',
             ],
         },
     },
@@ -140,17 +143,25 @@ STATIC_URL = '/static/'
 # Built-IN Login System
 LOGIN_REDIRECT_URL = '/' # It means home view
 LOGOUT_REDIRECT_URL = '/'
+
+###################
+#   CHANGE IN LOCAL SETTINGS IF YOU WANT. FOR EXAMPLE FOR DEVELOP
+#   AND TESTING
+###################
+
+URL_LOCAL_GRAPHITE = "http://localhost:8080"
+DEBUG = True
+SENSE_HAT = True
+
 #########################################################################
 #                                                                       #
 #                           LOCAL SETTINGS                              #
 #                                                                       #
 #########################################################################
+
 try:
-    SETTINGS_LOCAL
-except NameError:
-    try:
-        from settings_local import *
-    except ImportError:
-        pass
+    from .settings_local import *
+except ImportError:
+    pass
 
 
