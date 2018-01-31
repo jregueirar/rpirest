@@ -9,36 +9,30 @@ from rest_framework.reverse import reverse
 from django.core.files.storage import default_storage as storage
 from .utils import save_uploaded_file_to_disk
 from django.conf import settings
+from core.common import apirest_response_format
 import logging
-
-
-
-if settings.DEVICE_ATTACHED == "sense_hat":
-    # Useful for testing in vagrant or docker
-    if settings.SENSE_HAT:
-        try:
-            from sense_hat import SenseHat
-        except ImportError:
-            raise SystemExit('[ERROR] Please make sure sense_hat is installed properly')
-
-        # Parche para permitir despliegue sin que sensehat este conectado
-        # Fixme: ¿mejorar para que se vea el error en la APP web?
-        # Si no se pone la excepción falla el despliegue si el sense-hat no esta enchufado
-        try:
-            sense = SenseHat()
-        except OSError:
-            pass
-
-if settings.DEVICE_ATTACHED == "dht22" or settings.DEVICE_ATTACHED == "dht11" or settings.DEVICE_ATTACHED == "am2302":
-    import Adafruit_DHT
-
-    DHT_SENSORS = {'dht11': Adafruit_DHT.DHT11,
-                    'dht22': Adafruit_DHT.DHT22,
-                    'am2302': Adafruit_DHT.AM2302}
 
 # Get an instance of a logger
 logger = logging.getLogger("apirest")
+logger.debug("IS_RPI: " + str(settings.IS_RPI))
 
+# Useful for testing. For example: Deployments in docker or vagrant
+if settings.IS_RPI:
+    try:
+        from sense_hat import SenseHat
+    except ImportError:
+        raise SystemExit('[ERROR] Please make sure sense_hat is installed properly')
+
+    # Parche para permitir despliegue sin que sensehat este conectado
+    # Fixme: ¿mejorar para que se vea el error en la APP web?
+    # Si no se pone la excepción falla el despliegue si el sense-hat no está enchufado
+    try:
+        logger.debug("Initializing sense")
+        sense = SenseHat()
+    except OSError:
+        logger.error("[ERROR] Initializing sensehat. Please make sure sense_hat is installed properly")
+        # Escribimos en base de datos status o en el render...¿Decorador para cada vista?.
+        pass
 
 class APIRoot(APIView):
 
@@ -56,12 +50,19 @@ class APIRoot(APIView):
 class RotationView(viewsets.ViewSet):
     """
     If you're using the Pi upside down or sideways you can use this function to correct the orientation of the image being shown.
+
+    Parameter; Type; Valid values;Explanation
+
+    r; Integer; 0 90 180 270; The angle to rotate the LED matrix though. 0 is with the Raspberry Pi HDMI port facing downwards.
+
+    redraw; Boolean; True False; Whether or not to redraw what is already being displayed on the LED matrix. Defaults to True
     """
     serializer_class = AngleSerializer
 
     def update(self, request, pk=None):
         serializer = AngleSerializer(data=request.data)
         if serializer.is_valid():
+            logger.debug("Redraw: " + str(serializer.data['redraw']))
             sense.set_rotation(serializer.data['angle'], serializer.data['redraw'])
             response = {}
             response['status'] = "success"
@@ -69,7 +70,7 @@ class RotationView(viewsets.ViewSet):
             return Response(response, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
+# Voltear Horizontalmente: https://docs.gimp.org/es/gimp-layer-flip-horizontal.html
 class FlipHView(viewsets.ViewSet):
     serializer_class = RedrawSerializer
 
@@ -82,6 +83,7 @@ class FlipHView(viewsets.ViewSet):
 
 
 # ¿Ponemos en data el atributo redraw?
+# https://docs.gimp.org/es/gimp-layer-flip-vertical.html
 class FlipVView(viewsets.ViewSet):
     serializer_class = RedrawSerializer
 
@@ -117,6 +119,8 @@ class ClearView(viewsets.ViewSet):
             response['data'] = serializer.data
             return Response(response, status=status.HTTP_200_OK)
 
+def hash_colour_2_list(hash):
+    return [hash['r'], hash['g'], hash['b']];
 
 class ShowMessageView(viewsets.ViewSet):
     """
@@ -130,11 +134,11 @@ class ShowMessageView(viewsets.ViewSet):
         if serializer.is_valid(raise_exception=True):
             sense.show_message(request.data['text_string'],
                                 scroll_speed=serializer.data['scroll_speed'],
-                                text_colour=serializer.data['text_colour'],
-                                back_colour=serializer.data['back_colour']
-                                )
+                                text_colour=hash_colour_2_list(serializer.data['text_colour']),
+                                back_colour=hash_colour_2_list(serializer.data['back_colour'])
+                               )
             response = {'status': 'success'}
-            response['url'] = request.path   # FIXME ¿Redundante? ¿Lo dejamos?
+            response['url'] = request.path
             response['data'] = serializer.data
             return Response(response, status=status.HTTP_200_OK)
 
@@ -146,13 +150,12 @@ class ShowLetterView(viewsets.ViewSet):
         print(request.data)
         if serializer.is_valid(raise_exception=True):
             print(serializer.validated_data)
-            #FIXME Waiting to finish the schroll :-(
             sense.show_letter(serializer.validated_data['letter'],
-                              text_colour=serializer.data['text_colour'],
-                              back_colour=serializer.validated_data['back_colour']
+                              text_colour=hash_colour_2_list(serializer.data['text_colour']),
+                              back_colour=hash_colour_2_list(serializer.data['back_colour'])
                               )
             response = {'status': 'success'}
-            response['url'] = request.path   # FIXME ¿Redundante? ¿Lo dejamos?
+            response['url'] = request.path
             response['data'] = serializer.data
             return Response(response, status=status.HTTP_200_OK)
 
@@ -169,7 +172,7 @@ class LowLightView(viewsets.ViewSet):
         if serializer.is_valid(raise_exception=True):
             sense.low_light = serializer.data['low_light']
             response = {'status': 'success'}
-            response['url'] = request.path   # FIXME ¿Redundante? ¿Lo dejamos?
+            response['url'] = request.path   # FIXME ¿Redundante? ¿Lo dejamos?. Crear un formato de respuesta unico.
             response['data'] = serializer.data
             return Response(response, status=status.HTTP_200_OK)
 
@@ -211,12 +214,12 @@ class GammaView(viewsets.ViewSet):
         response['data'] = {'gamma_tuple': sense.gamma}
         return Response(response)
 
-
 class HumidityView(viewsets.ViewSet):
     """
-    Gets the current temperature in degrees Celsius from the humidity sensor.
+    Gets the current percent of humidity from the humidity sensor.
     """
     def list(self, request):
+<<<<<<< HEAD:src/apirest/views.py
         if settings.DEVICE_ATTACHED == 'sense_hat':
             result = sense.get_humidity()
         else:
@@ -226,6 +229,17 @@ class HumidityView(viewsets.ViewSet):
         response['status']="success"
         response['msg'] = "Sensor " + settings.DEVICE_ATTACHED
         response['Humidity'] = result
+=======
+        result = sense.get_humidity()
+        response = apirest_response_format(request.path, "success", "Humidity (%)", result)
+        return Response(response)
+
+
+        response={'url': request.path}
+        response['status']="success"
+        response['msg'] = "Sensor Sense Hat "
+        response['result'] = result
+>>>>>>> develop:apirest/views.py
         return Response(response)
 
 
@@ -237,6 +251,7 @@ class TemperatureView(viewsets.ViewSet):
     """
 
     def list(self, request):
+<<<<<<< HEAD:src/apirest/views.py
         if settings.DEVICE_ATTACHED == 'sense_hat':
             result = sense.get_temperature_from_humidity()
         else:
@@ -246,6 +261,10 @@ class TemperatureView(viewsets.ViewSet):
         response['status']="success"
         response['msg'] = "Sensor " + settings.DEVICE_ATTACHED
         response['Temperature'] = result
+=======
+        result = sense.get_temperature_from_humidity()
+        response = apirest_response_format(request.path, "success", "Temperature in degrees Celsius", result)
+>>>>>>> develop:apirest/views.py
         logger.debug('TemperatureView: ' + str(result))
         return Response(response)
 
@@ -257,7 +276,6 @@ class TemperatureFromHumidityView(viewsets.ViewSet):
 
     def list(self, request):
         result = sense.get_temperature_from_humidity()
-
         response={'url': None}
         response['Temperature'] = result
         return Response(response)
@@ -270,9 +288,7 @@ class TemperatureFromPressureView(viewsets.ViewSet):
 
     def list(self, request):
         result = sense.get_temperature_from_pressure()
-
-        response={'url': None}
-        response['Temperature'] = result
+        response = apirest_response_format(request.path, "success", "Temperature in degrees Celsius", result)
         return Response(response)
 
 
@@ -285,9 +301,7 @@ class PressureView(viewsets.ViewSet):
 
     def list(self, request):
         result = sense.get_pressure()
-
-        response={'url': request.path}
-        response['Pressure'] = result
+        response=apirest_response_format(request.path, "success", "Pressure", result)
         return Response(response)
 
 

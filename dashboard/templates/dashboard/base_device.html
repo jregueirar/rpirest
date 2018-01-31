@@ -1,0 +1,28 @@
+{% extends "dashboard/base.html" %}
+{% load staticfiles %}
+{% block content %}
+
+
+    {% block content_header %}
+         <div class="w3-bar w3-teal">
+            <div class="w3-dropdown-hover">
+                <button class="w3-button w3-blue">{{ type_device }}<i class="fa fa-sort-desc fa-fw"></i></button>
+                <div class="w3-dropdown-content w3-bar-block w3-card-4">
+                    {% for device in attached_devices_list %}
+                        <a href="/{{ device.type }}" class="w3-bar-item w3-button">{{ device.type }}</a>
+                    {% endfor %}
+               </div>
+            </div>
+            {% if type_device == "sensehat" %}
+                <a id="id_topnavbar_envsensors" href="/{{ type_device }}/env_sensors" class="w3-bar-item w3-button">Sensores de Entorno</a>
+                <a id="id_{{ type_device }}_ledmatrix" href="/{{ type_device }}/led_matrix" class="w3-bar-item w3-button">Matriz Led</a>
+                <a id="id_{{ type_device }}_graphs" href="/{{ type_device }}/graphs" class="w3-bar-item w3-button">Gráficas</a>
+            {% endif %}
+            {% if type_device == "am2302" or type_device == "dht11" or type_device == "dht22" %}
+                <a href="#" class="w3-bar-item w3-button">Sensores de Entorno</a>
+                <a href="#" class="w3-bar-item w3-button">Gráficas</a>
+            {% endif %}
+             <a href="{{ API_REST_URL }}{{ type_device }}" class="w3-bar-item w3-button">APIREST</a>
+         </div>
+    {% endblock content_header %}
+{% endblock content %}

@@ -1,0 +1,40 @@
+*{
+  box-sizing: border-box;
+}
+
+.dotmatrix {
+  width: 300px;
+  background: #CCC;
+  overflow: hidden;
+  padding: 10px;
+  border-radius: 0px;
+  margin: auto;
+}
+
+.dot {
+  width: 25px;
+  height: 25px;
+  margin: 5px;
+  float: left;
+  border-radius: 0%;
+  background: #CCC;
+  box-shadow: inset 0 0 10px 5px #303030, inset 0 0 10px 5px #303030;
+}
+
+.on {
+  background: #fff;
+  box-shadow: 0 0 20px 3px #fcfcaa, inset 0 0 13px #777;
+}
+
+.off {
+  background: #555;
+  box-shadow: inset 0 0 10px 5px #303030, inset 0 0 10px 5px #303030;
+}
+
+.ins {
+  color: #888;
+  font-family: sans-serif;
+  font-size: 12px;
+}
+
+#chart_temp { position: relative;}

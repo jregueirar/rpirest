@@ -44,11 +44,14 @@ INSTALLED_APPS = [
     'rest_framework_docs',
     'dashboard',
     'core',
-    'kronos'
+    'kronos',
+    'apirest',
+    'apirest_dht'
 ]
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAdminUser',),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 10
 }
 
@@ -135,8 +138,8 @@ USE_TZ = True
 #                           STATIC SETTINGS                             #
 #                                                                       #
 #########################################################################
-PROJECT_ROOT = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-STATIC_ROOT = os.path.join(PROJECT_ROOT, 'collected_static')
+# PROJECT_ROOT = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+STATIC_ROOT = os.path.join(BASE_DIR, 'collected_static')
 
 STATIC_URL = '/static/'
 
@@ -144,13 +147,20 @@ STATIC_URL = '/static/'
 LOGIN_REDIRECT_URL = '/' # It means home view
 LOGOUT_REDIRECT_URL = '/'
 
+# Useful in develop phase, for example for testing deployments in vagrant or docker
+machine=os.uname().machine
+if machine == "armv7l":
+    IS_RPI = True
+else:
+    IS_RPI = False
+
 ###################
 #   CHANGE IN LOCAL SETTINGS IF YOU WANT
 ###################
 URL_LOCAL_GRAPHITE = "http://rpi2:8080"
 GRAFANA_URL="http://rpi2:3000/dashboard/db/sensores-ambientales?from=now%2Fd&to=now%2Fd"
 DEBUG = True
-SENSE_HAT = True
+SENSE_HAT = False
 DEVICE_ATTACHED = "sense_hat"       # sense_hat, dht11, dht22 or am2302
 DHT_GPIO_PIN = 4   # Pin where the output of dht11, dht22 or am2302 is conected
 
@@ -159,7 +169,7 @@ LOGGING = {
     'disable_existing_loggers': False,
     'handlers': {
         'file': {
-            'level': 'INFO',
+            'level': 'DEBUG',
             'class': 'logging.FileHandler',
             'filename': '/var/log/pirest-sense-hat/info.log',
         },
@@ -167,9 +177,19 @@ LOGGING = {
     'loggers': {
         'apirest': {
             'handlers': ['file'],
-            'level': 'INFO',
+            'level': 'DEBUG',
             'propagate': True,
         },
+        'apirest_dht': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'dashboard': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        }
     },
 }
 #########################################################################

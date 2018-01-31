@@ -1,6 +1,17 @@
 
-=======
-## 0.31 (207-08-21)
+## v.5 (2018-01-02
+  - Divide and win. The ansible code is moved to other git project
+
+## v0.401 (2017-12-17)
+ - The script showTempRest.py. Example, using the HTTP-REST APIs of two devices.
+
+## v0.4
+ - It is used yaml files for the configuration of the devices conenneted to the RPi. Maybe in the future pass to json.
+
+## v0.302 (2017-08-24)
+ - Fix errors in the deployment of graphite.
+
+## 0.301 (2017-08-21)
  - graphite-api is used instead graphite-web. graphite-api is installed from pip3 because
    the package doesn't exist for Raspbian Jessie.
 
@@ -11,8 +22,6 @@
  - It is send metrics to the local graphite.
  - It isn't charged the python sense-hat library if the operative system isn't Raspbian (For example debug with vagrant).
  - Appearance is improved
-
->>>>>>> fb498b5... Tagging the version
 
 ## 0.202 (2017-05-04)
 
