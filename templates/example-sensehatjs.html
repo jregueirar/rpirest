@@ -1,0 +1,97 @@
+{% extends "base_example.html" %}
+
+{% block content %}
+<h1> Example using jQuery RPIJS plugin with Sensehat Rest Api </h1>
+<h2>Sense Environments: </h2>
+<ul>
+    <li><b>Temperature:</b> <span id="temperature"></span>&deg;C</li>
+    <li><b>Pressure:</b> <span id="pressure"></span></li>
+    <li><b>Humidity:</b> <span id="humidity"></span>%</li>
+</ul>
+
+<h2> LED MATRIX </h2>
+
+    <form role="form">
+        <div class="form-group">
+            Coordenada X:
+	    <input type="number" name="x" min="0" max="7" id="pixel_coord_x" value="0"><br>
+            Coordenada Y:
+	    <input type="number" name="y" min="0" max="7" id="pixel_coord_y" value="0"><br>
+	    Color:
+	    <input type="color" name="pixel_color" value="#0000FF" id="pixel_color">
+             <div id="pixel_color_text"> </div>
+        </div>
+        <div>
+            <button type="button" class="btn" id="get_pixel">Get Pixel</button>
+            <button type="button" class="btn" id="set_pixel">Set Pixel</button>
+        </div>
+    </form>
+
+<script>
+
+$(function(){
+	/* Initialize rpijs */
+	$.rpijs.init("../api/v1/", "admin", "admin1234");
+
+	/*var options = {
+		update: 1000,
+		rate: false,
+        	format: [{
+        		key: ["Temperature"],
+        		rate: false,
+        		valueType: "value",
+			decimals: 4
+        	}]
+		};
+        */
+
+	/* change formatDefaults */
+	$.rpijs.formatDefaults.valueType = "binary";
+	$.rpijs.formatDefaults.update = 2000;
+
+	/* Set environment sensors values */
+	$.rpijs.get("sensehat/env_sensors/humidity", function(data) {
+		//console.log("DEBUG. Humidity: " +  data.output.Humidity.toFixed(options.format[0].decimals));
+		$("#humidity").html(data.Humidity.toFixed(2));
+		return true;
+	});
+
+	$.rpijs.get("sensehat/env_sensors/temperature", function(data) {
+		$("#temperature").html(data.Temperature.toFixed(2));
+		return true;
+	});
+
+	$.rpijs.get("sensehat/env_sensors/pressure", function(data) {
+		$("#pressure").html(data.Pressure.toFixed(2));
+		return true;
+	});
+
+	$('#get_pixel').click(function() {
+		var service_name = 'sensehat/led_matrix/pixels/' + $('#pixel_coord_x').val() + ',' + $('#pixel_coord_y').val()
+        $.rpijs.get(service_name, function(data){
+            console.log("Success " + data.pixel.color.r + data.pixel.color.g + data.pixel.color.b);
+			var hex_color = $.sensehat.rgbToHex(data.pixel.color.r, data.pixel.color.g, data.pixel.color.b);
+			console.log("Success " + hex_color);
+			$("#pixel_color").attr("value", ""+hex_color);
+			$("#pixel_color_text").html(hex_color);
+                }, {update: 0});
+    	});
+
+
+	$('#set_pixel').click(function() {
+		console.log("Click set_pixel");
+		console.log($('#pixel_color').val());
+		var rgb = $.sensehat.hexToRgb($('#pixel_color').val());
+		var data={
+    		"r": rgb.r,
+    		"g": rgb.g,
+    		"b": rgb.b
+		}
+		var service_name = 'sensehat/led_matrix/pixels/' + $('#pixel_coord_x').val() + ',' + $('#pixel_coord_y').val() + "/"
+		$.rpijs.put(service_name, data, function() {
+			console.log("Set Pixel Callback Done");
+		});
+   });
+});
+</script>
+{% endblock content %}

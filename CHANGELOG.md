@@ -23,10 +23,7 @@
  - It is send metrics to the local graphite.
  - It isn't charged the python sense-hat library if the operative system isn't Raspbian (For example debug with vagrant).
  - Appearance is improved
-<<<<<<< HEAD
-=======
 
->>>>>>> develop
 
 ## 0.202 (2017-05-04)
 
