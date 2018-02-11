@@ -68,7 +68,7 @@ MIDDLEWARE_CLASSES = [
 ]
 
 
-ROOT_URLCONF = 'pirest-sense-hat.urls'
+ROOT_URLCONF = 'rpirest.urls'
 
 TEMPLATES = [
     {
@@ -87,7 +87,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'pirest-sense-hat.wsgi.application'
+WSGI_APPLICATION = 'rpirest.wsgi.application'
 
 
 # Database
@@ -171,7 +171,7 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': '/var/log/pirest-sense-hat/info.log',
+            'filename': '/var/log/rpirest/info.log',
         },
     },
     'loggers': {
