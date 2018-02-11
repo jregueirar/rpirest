@@ -1,7 +1,11 @@
 
-## v.5 (2018-01-02
+## v.5 (2018-02-11)
 
- - Divide and win. The ansible code is moved to other git project
+Divide and win. This project is only for the apirest of the raspberry and the shields or deviced connected.
+Therefore:
+
+ - The ansible code is deleted.
+ - The miscellaneous coded is deleted.
 
 ## v0.401 (2017-12-17)
  - The script showTempRest.py. Example, using the HTTP-REST APIs of two devices.

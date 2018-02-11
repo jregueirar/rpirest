@@ -1,5 +1,0 @@
----
-# handlers file for rpi-graphite
-- name: restart graphite-api
-  service: name=graphite-api state=restarted
-
