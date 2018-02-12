@@ -1,11 +1,13 @@
 
 ## v.5 (2018-02-11)
 
-Divide and win. This project is only for the apirest of the raspberry and the shields or deviced connected.
+Divide and win. I decided to simplify This project. This project only have the code for the API REST of the raspberry and the shields or deviced connected it.
+
 Therefore:
 
- - The ansible code is deleted.
+ - The ansible code for the deploy is deleted, it is moved to other code repository.
  - The miscellaneous coded is deleted.
+ - The dashboard code is deleted too, it is moved to other code repository.
 
 ## v0.401 (2017-12-17)
  - The script showTempRest.py. Example, using the HTTP-REST APIs of two devices.
