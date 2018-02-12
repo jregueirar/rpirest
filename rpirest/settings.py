@@ -80,7 +80,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'dashboard.context_processors.global_settings',
+                #'dashboard.context_processors.global_settings',
             ],
         },
     },
@@ -157,7 +157,6 @@ else:
 #   CHANGE IN LOCAL SETTINGS IF YOU WANT
 ###################
 URL_LOCAL_GRAPHITE = "http://rpi2:8080"
-GRAFANA_URL="http://rpi2:3000/dashboard/db/sensores-ambientales?from=now%2Fd&to=now%2Fd"
 DEBUG = True
 SENSE_HAT = False
 DEVICE_ATTACHED = "sense_hat"       # sense_hat, dht11, dht22 or am2302
@@ -184,11 +183,6 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
-        'dashboard': {
-            'handlers': ['file'],
-            'level': 'DEBUG',
-            'propagate': True,
-        }
     },
 }
 #########################################################################
