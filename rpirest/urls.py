@@ -25,7 +25,7 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^api/v1/sensehat/', include('apirest.urls')),
+    url(r'^api/v1/sensehat/', include('apirest_sensehat.urls')),
     url(r'^api/v1/dht11/', include('apirest_dht.urls'), {'device': "dht11"}),
     url(r'^api/v1/dht22/', include('apirest_dht.urls'), {'device': "dht22"}),
     url(r'^api/v1/am2302/', include('apirest_dht.urls'), {'device': "am2302"}),

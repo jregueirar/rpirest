@@ -1,4 +1,4 @@
-from apirest import views
+from apirest_sensehat import views
 from django.conf.urls import url, include
 from core.common import MyRouter
 import yaml

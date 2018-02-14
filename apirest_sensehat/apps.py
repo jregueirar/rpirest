@@ -2,4 +2,4 @@ from django.apps import AppConfig
 
 
 class SensehatConfig(AppConfig):
-    name = 'apirest'
+    name = 'apirest_sensehat'
