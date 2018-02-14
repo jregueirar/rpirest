@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('apirest', '0003_remove_attacheddevices_name'),
+        ('apirest_sensehat', '0003_remove_attacheddevices_name'),
     ]
 
     operations = [

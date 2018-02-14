@@ -8,7 +8,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('apirest', '0002_auto_20171026_1852'),
+        ('apirest_sensehat', '0002_auto_20171026_1852'),
     ]
 
     operations = [

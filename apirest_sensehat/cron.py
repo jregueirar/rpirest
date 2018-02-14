@@ -1,10 +1,10 @@
 import kronos
 import graphitesend
 import yaml
-from unipath import Path 
+from unipath import Path
 import logging
 
-logger = logging.getLogger("apirest")
+logger = logging.getLogger("apirest_sensehat")
 
 BASE_DIR = Path(__file__).parent
 ymlconfig=BASE_DIR.child("config.yml")

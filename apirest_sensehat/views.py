@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from rest_framework.response import Response
 from rest_framework import viewsets, status
-from apirest.serializers import *
+from apirest_sensehat.serializers import *
 from rest_framework.decorators import detail_route, list_route
 #from sense_hat import SenseHat
 from rest_framework.views import APIView
@@ -13,7 +13,7 @@ from core.common import apirest_response_format
 import logging
 
 # Get an instance of a logger
-logger = logging.getLogger("apirest")
+logger = logging.getLogger("apirest_sensehat")
 logger.debug("IS_RPI: " + str(settings.IS_RPI))
 
 # Useful for testing. For example: Deployments in docker or vagrant

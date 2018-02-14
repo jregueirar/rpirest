@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'rest_framework_docs',
     'core',
     'kronos',
-    'apirest',
+    'apirest_sensehat',
     'apirest_dht'
 ]
 
@@ -173,7 +173,7 @@ LOGGING = {
         },
     },
     'loggers': {
-        'apirest': {
+        'apirest_sensehat': {
             'handlers': ['file'],
             'level': 'DEBUG',
             'propagate': True,
