@@ -17,13 +17,18 @@ Including another URLconf
 from django.contrib import admin
 from django.conf.urls import url, include
 from django.views.generic import TemplateView
+from rest_framework_swagger.views import get_swagger_view
 
 # Snippet para servir ficheros estáticos en modo debug
 from django.conf import settings
 from django.conf.urls.static import static
 
+schema_view = get_swagger_view(title='Pastebin API')
+
 
 urlpatterns = [
+    url(r'^$', schema_view),
+    url(r'^docs/', include('rest_framework_docs.urls')),
     url(r'^admin/', admin.site.urls),
     url(r'^api/v1/sensehat/', include('apirest.urls')),
     url(r'^api/v1/dht11/', include('apirest_dht.urls'), {'device': "dht11"}),

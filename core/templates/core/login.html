@@ -1,9 +1,10 @@
-{% extends "dashboard/base.html" %}
+{% extends "core/base.html" %}
 {% load staticfiles %}
 
-{% block extra-css %}
+{% block css %}
+    {{ block.super }}
     <link rel="stylesheet" href="{% static "core/css/login.css" %}">
-{% endblock extra-css %}
+{% endblock %}
 
 {% block body %}
 
