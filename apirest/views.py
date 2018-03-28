@@ -11,6 +11,7 @@ from .utils import save_uploaded_file_to_disk
 from django.conf import settings
 from core.common import apirest_response_format
 import logging
+from rest_framework.permissions import AllowAny
 
 # Get an instance of a logger
 logger = logging.getLogger("apirest")
@@ -215,10 +216,15 @@ class GammaView(viewsets.ViewSet):
         response['data'] = {'gamma_tuple': sense.gamma}
         return Response(response)
 
-class HumidityView(viewsets.ViewSet):
+
+# class HumidityView(viewsets.ViewSet):
+class HumidityView(APIView):
+
     """
     Gets the current percent of humidity from the humidity sensor.
     """
+    permission_classes = (AllowAny,)
+
     def list(self, request):
         result = sense.get_humidity()
         response = apirest_response_format(request.path, "success", "Humidity (%)", result)

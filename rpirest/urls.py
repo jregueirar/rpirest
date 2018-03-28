@@ -23,21 +23,22 @@ from rest_framework_swagger.views import get_swagger_view
 from django.conf import settings
 from django.conf.urls.static import static
 
-schema_view = get_swagger_view(title='Pastebin API')
+schema_view = get_swagger_view(title='RPIRest API')
 
 
 urlpatterns = [
     url(r'^$', schema_view),
     url(r'^docs/', include('rest_framework_docs.urls')),
     url(r'^admin/', admin.site.urls),
-    url(r'^api/v1/sensehat/', include('apirest.urls')),
-    url(r'^api/v1/dht11/', include('apirest_dht.urls'), {'device': "dht11"}),
+    url(r'^', include('core.urls')),
+
+    #API
+    url(r'^api/v1/sensehat/', view=include('apirest.urls', namespace='sensehat')),
+    url(r'^api/v1/dht11/', include('apirest_dht.urls')),
     url(r'^api/v1/dht22/', include('apirest_dht.urls'), {'device': "dht22"}),
     url(r'^api/v1/am2302/', include('apirest_dht.urls'), {'device': "am2302"}),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    #url(r'^docs/', include('rest_framework_docs.urls')),
-    url(r'^', include('core.urls')),
-    #url(r'^login$'),
+    # url(r'^login$'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 #if settings.DEVICE_ATTACHED == 'sense_hat':

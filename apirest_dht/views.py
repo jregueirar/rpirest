@@ -4,7 +4,14 @@ from rest_framework import viewsets
 from apirest.serializers import *
 from django.conf import settings
 from core.common import apirest_response_format
+from rest_framework.views import APIView
+
+from rest_framework.decorators import api_view
+from rest_framework.reverse import reverse
+
 import logging
+
+
 
 
 if settings.IS_RPI:
@@ -30,12 +37,46 @@ logger = logging.getLogger("apirest_dht")
 
 
 # Create your views here.
-class HumidityView(viewsets.ViewSet):
+# class HumidityView(viewsets.ViewSet):
+
+# A single entry point to the API. A index.
+
+# @api_view(['GET'])
+# def api_root(request, format=None):
+#     return Response({
+#         'humidity': reverse('HumidityView', request=request, format=format)
+#     })
+
+# class APIRoot(APIView):
+#
+#     def get(self, request):
+#         return Response({
+#             'HumidityView': reverse('HumidityView', request=request)
+#         })
+
+
+class HumidityView(APIView):
     """
     Gets the current temperature in degrees Celsius from the humidity sensor.
     """
+
+    # throttle_classes = ()
+    # permission_classes = ()
+    # parser_classes = (parsers.FormParser, parsers.MultiPartParser, parsers.JSONParser,)
+    # renderer_classes = (renderers.JSONRenderer,)
+    # serializer_class = AuthTokenSerializer
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({'token': token.key})
+
     # Device is from urls.py: am2302, dht11 or dht22
-    def list(self, request, device):
+    def get(self, request, device=None):
+    #def get(self, request):
+        device = "am2302"
         humidity, temperature = Adafruit_DHT.read_retry(DHT_SENSORS[device], settings.DHT_GPIO_PIN)
         logger.debug('HumidityView: ' + str(humidity))
         response = apirest_response_format(url=request.path, status="success", msg="Sensor " + device, result=humidity)
