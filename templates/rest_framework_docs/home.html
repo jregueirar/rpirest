@@ -1,17 +1,21 @@
 {% extends "rest_framework_docs/docs.html" %}
 {% load drfdocs_filters %}
 
+
+
 {% block apps_menu %}
+
 {% regroup endpoints by name_parent as endpoints_grouped %}
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Jump To <span class="caret"></span></a>
-  <ul class="dropdown-menu">
-    {% for group in endpoints_grouped %}
-      <li><a href="#{{ group.grouper|lower }}-group">{{ group.grouper }}</a></li>
-    {% endfor %}
-  </ul>
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Jump To <span class="caret"></span></a>
+    <ul class="dropdown-menu">
+        {% for group in endpoints_grouped %}
+        <li><a href="#{{ group.grouper|lower }}-group">{{ group.grouper }}</a></li>
+        {% endfor %}
+    </ul>
 </li>
 {% endblock %}
+
 
 
 {% block content %}
@@ -21,7 +25,7 @@
   {% if endpoints_grouped %}
   {% for group in endpoints_grouped %}
 
-    <h1 id="{{ group.grouper|lower }}-group">{{group.grouper}}TUTUA</h1>
+    <h1 id="{{ group.grouper|lower }}-group"><a href="{{group.grouper}}">{{group.grouper}}</a></h1>
 
     <div class="panel-group" role="tablist">
 
@@ -39,16 +43,20 @@
 
             <div class="col-md-5">
               <ul class="list-inline methods">
-                {% for method in endpoint.allowed_methods %}
-                  <li class="method {{ method|lower }}">{{ method }}</li>
-                {% endfor %}
-                  <li class="method plug"
-                    data-toggle="modal"
-                    data-path="{{ endpoint.path }}"
-                    data-methods="{{ endpoint.allowed_methods }}"
-                    data-permissions="{{ endpoint.permissions }}"
-                    data-fields="{{ endpoint.fields_json }}">
-                    <i class="fa fa-plug"></i></li>
+{#                {% for method in endpoint.allowed_methods %}#}
+{#                  <li class="method {{ method|lower }}">{{ method }}</li>#}
+{#                {% endfor %}#}
+{#                <button>Open up <i class="fa fa-angle-right"></i></button>#}
+                  <li>
+                    <a href="{{ endpoint.path }}"><i class="fa fa-link fa-plug"></i></a>
+                  </li>
+{#                  <li class="method plug"#}
+{#                    data-toggle="modal"#}
+{#                    data-path="{{ endpoint.path }}"#}
+{#                    data-methods="{{ endpoint.allowed_methods }}"#}
+{#                    data-permissions="{{ endpoint.permissions }}"#}
+{#                    data-fields="{{ endpoint.fields_json }}">#}
+{#                    <i class="fa fa-plug"></i></li>#}
               </ul>
             </div>
           </div>

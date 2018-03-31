@@ -54,29 +54,12 @@ logger = logging.getLogger("apirest_dht")
 #             'HumidityView': reverse('HumidityView', request=request)
 #         })
 
-
-class HumidityView(APIView):
+class HumidityView(viewsets.ViewSet):
     """
     Gets the current temperature in degrees Celsius from the humidity sensor.
     """
-
-    # throttle_classes = ()
-    # permission_classes = ()
-    # parser_classes = (parsers.FormParser, parsers.MultiPartParser, parsers.JSONParser,)
-    # renderer_classes = (renderers.JSONRenderer,)
-    # serializer_class = AuthTokenSerializer
-
-    def post(self, request):
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data['user']
-        token, created = Token.objects.get_or_create(user=user)
-        return Response({'token': token.key})
-
     # Device is from urls.py: am2302, dht11 or dht22
-    def get(self, request, device=None):
-    #def get(self, request):
-        device = "am2302"
+    def list(self, request, device):
         humidity, temperature = Adafruit_DHT.read_retry(DHT_SENSORS[device], settings.DHT_GPIO_PIN)
         logger.debug('HumidityView: ' + str(humidity))
         response = apirest_response_format(url=request.path, status="success", msg="Sensor " + device, result=humidity)

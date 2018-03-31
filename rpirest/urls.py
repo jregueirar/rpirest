@@ -16,30 +16,19 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.conf.urls import url, include
-from django.views.generic import TemplateView
-from rest_framework_swagger.views import get_swagger_view
 
 # Snippet para servir ficheros estáticos en modo debug
 from django.conf import settings
 from django.conf.urls.static import static
 
-schema_view = get_swagger_view(title='RPIRest API')
-
-
 urlpatterns = [
-    url(r'^$', schema_view),
-    url(r'^docs/', include('rest_framework_docs.urls')),
-    url(r'^admin/', admin.site.urls),
     url(r'^', include('core.urls')),
+    url(r'^admin/', admin.site.urls),
 
-    #API
+    #APIs DRF
     url(r'^api/v1/sensehat/', view=include('apirest.urls', namespace='sensehat')),
     url(r'^api/v1/dht11/', include('apirest_dht.urls')),
     url(r'^api/v1/dht22/', include('apirest_dht.urls'), {'device': "dht22"}),
     url(r'^api/v1/am2302/', include('apirest_dht.urls'), {'device': "am2302"}),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    # url(r'^login$'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-
-#if settings.DEVICE_ATTACHED == 'sense_hat':
-#    urlpatterns.append(url(r'^api/v1/', include('apirest.urls')))
