@@ -4,7 +4,14 @@ from rest_framework import viewsets
 #from apirest_sensehat.serializers import *
 from django.conf import settings
 from core.common import apirest_response_format
+from rest_framework.views import APIView
+
+from rest_framework.decorators import api_view
+from rest_framework.reverse import reverse
+
 import logging
+
+
 
 
 if settings.IS_RPI:
@@ -30,6 +37,23 @@ logger = logging.getLogger("apirest_dht")
 
 
 # Create your views here.
+# class HumidityView(viewsets.ViewSet):
+
+# A single entry point to the API. A index.
+
+# @api_view(['GET'])
+# def api_root(request, format=None):
+#     return Response({
+#         'humidity': reverse('HumidityView', request=request, format=format)
+#     })
+
+# class APIRoot(APIView):
+#
+#     def get(self, request):
+#         return Response({
+#             'HumidityView': reverse('HumidityView', request=request)
+#         })
+
 class HumidityView(viewsets.ViewSet):
     """
     Gets the current temperature in degrees Celsius from the humidity sensor.

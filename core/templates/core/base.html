@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+{% load i18n %}
+
+<html>
+  {% block before_head %}{% endblock %}
+<head>
+    <title>Rpirest. The API for your Raspi</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% block css %}
+        <link rel="stylesheet" href="{% static "core/css/w3.css" %}">
+        <link rel="stylesheet" href="{% static "core/css/raleway.css" %}">
+      {% endblock css %}
+      {% block extra-css %} {% endblock extra-css %}
+
+
+    {% block js  %}
+    {% endblock js %}
+
+    <style>
+            html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
+    </style>
+
+</head>
+
+{% block body %}
+
+<body class="w3-light-grey">
+
+
+{% endblock body %}
+</body>
+</html>
