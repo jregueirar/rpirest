@@ -1,10 +1,10 @@
 ## Installation
 * Install Raspbian in a RaspberryPi 2 or 3 with ssh access
 
-* Desployment
-  * cd deploy
+* Desployment with Ansibble
+  * git clone https://github.com/jregueirar/ansible-rpirest
+  * ansible-galaxy install -r requiriments.yml
   * Edit inventory file with your Raspberrypi infraestructure
-  * ansible-galaxy install -r
   * ansible-playbook pirest-sense-hat.yml -l rpis -i inventory
 
 * Create superuser for login in the GUI
@@ -17,7 +17,9 @@
 
 ## Screenshots
 
-### Main Dashboard Page
-![tutua](screenshots/env_sensors.png)
+![index01](screenshots/rpirest_index01.png)
+
+![index02](screenshots/rpirest_index02.png)
+
 
 

@@ -6,7 +6,7 @@ import yaml
 
 router = MyRouter()
 
-router.register(r'env_sensor/humidity', views.HumidityView.as_view(), base_name='humidity')
+router.register(r'env_sensor/humidity', views.HumidityView, base_name='humidity')
 router.register(r'env_sensor/temperature', views.TemperatureView,
                 base_name='temperature')
 router.register(r'env_sensor/temperature_from_humidity', views.TemperatureFromHumidityView,

@@ -21,12 +21,16 @@ from django.conf.urls import url, include
 from django.conf import settings
 from django.conf.urls.static import static
 
+
+from rest_framework_docs.views import DRFDocsView
+from django.contrib.auth.decorators import login_required
+
 urlpatterns = [
     url(r'^', include('core.urls')),
     url(r'^admin/', admin.site.urls),
 
     #APIs DRF
-    url(r'^api/v1/sensehat/', view=include('apirest.urls', namespace='sensehat')),
+    url(r'^api/v1/sensehat', view=include('apirest_sensehat.urls', namespace='sensehat')),
     url(r'^api/v1/dht11/', include('apirest_dht.urls')),
     url(r'^api/v1/dht22/', include('apirest_dht.urls'), {'device': "dht22"}),
     url(r'^api/v1/am2302/', include('apirest_dht.urls'), {'device': "am2302"}),

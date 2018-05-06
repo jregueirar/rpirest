@@ -39,14 +39,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'rest_framework_docs',
-    'rest_framework_swagger',
+    'pip',
     'corsheaders',
     'django_extensions',
     'core',
     'kronos',
     'apirest_sensehat',
-    'apirest_dht'
+    'apirest_dht',
+    'rest_framework_docs'
 ]
 
 REST_FRAMEWORK = {
@@ -81,7 +81,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                #'dashboard.context_processors.global_settings',
             ],
         },
     },
@@ -196,5 +195,3 @@ try:
     from .settings_local import *
 except ImportError:
     pass
-
-

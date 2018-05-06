@@ -1,5 +1,13 @@
+## v0.6.1(2018-05-06)
 
-## v.5 (2018-02-11)
+- Fix Error: Template Does Not Exist: rest_framework_docs/components/field_list.html
+
+## v0.6 (2018-04-14)
+
+ - Now the main page is a index with the  API endpoints of all the supported devices
+ - The main page required login
+
+## v0.5 (2018-02-11)
 
 Divide and win. I decided to simplify This project. This project only have the code for the API REST of the raspberry and the shields or deviced connected it.
 

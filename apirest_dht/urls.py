@@ -9,7 +9,7 @@ router.register(r'env_sensor/humidity', views.HumidityView, base_name='dht_humid
 router.register(r'env_sensor/temperature', views.TemperatureView, base_name='dht_temperature')
 
 urlpatterns = [
-    url(r'^', include(router.urls)),
+    url(r'dht11/', include(router.urls)),
     # url(r'^', views.api_root, name='index_dht'),
     # url(r'^', views.APIRoot.as_view(), name='index_dht'),
     # url(r'^env_sensor/humidity', views.HumidityView.as_view(), name='dht_humidity'),

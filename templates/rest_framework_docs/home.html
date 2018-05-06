@@ -1,7 +1,4 @@
 {% extends "rest_framework_docs/docs.html" %}
-{% load drfdocs_filters %}
-
-
 
 {% block apps_menu %}
 
@@ -43,20 +40,9 @@
 
             <div class="col-md-5">
               <ul class="list-inline methods">
-{#                {% for method in endpoint.allowed_methods %}#}
-{#                  <li class="method {{ method|lower }}">{{ method }}</li>#}
-{#                {% endfor %}#}
-{#                <button>Open up <i class="fa fa-angle-right"></i></button>#}
                   <li>
                     <a href="{{ endpoint.path }}"><i class="fa fa-link fa-plug"></i></a>
                   </li>
-{#                  <li class="method plug"#}
-{#                    data-toggle="modal"#}
-{#                    data-path="{{ endpoint.path }}"#}
-{#                    data-methods="{{ endpoint.allowed_methods }}"#}
-{#                    data-permissions="{{ endpoint.permissions }}"#}
-{#                    data-fields="{{ endpoint.fields_json }}">#}
-{#                    <i class="fa fa-plug"></i></li>#}
               </ul>
             </div>
           </div>
@@ -65,7 +51,7 @@
         <div id="{{ endpoint.path|slugify }}" class="panel-collapse collapse" role="tabpanel">
           <div class="panel-body">
             {% if endpoint.docstring %}
-            <p class="lead">{{ endpoint.docstring|markdown }}</p>
+                <p>{{ endpoint.docstring}}</p>
             {% endif %}
 
             {% if endpoint.errors %}

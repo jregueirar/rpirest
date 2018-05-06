@@ -9,6 +9,4 @@ urlpatterns = [
     url(r'^accounts/logout/$', auth_views.LogoutView.as_view(next_page='/'), name="logout"),
     url('^accounts/', include('django.contrib.auth.urls')),
     url('^$', login_required(DRFDocsView.as_view(), login_url="/api-auth/login/"), name="drfdocs"),
-    #url(r'^login/$', auth_views.LoginView.as_view()),
-    #url(r'^login$', auth_views.login, {'template_name': 'login.html', 'authentication_form': LoginForm},name='login'), # Deprecated Django 11.1
 ]
