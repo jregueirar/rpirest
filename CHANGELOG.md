@@ -1,3 +1,7 @@
+## v0.6.2(2018-05-12)
+
+- Fixing how to show endpoints in the main page.
+
 ## v0.6.1(2018-05-06)
 
 - Fix Error: Template Does Not Exist: rest_framework_docs/components/field_list.html

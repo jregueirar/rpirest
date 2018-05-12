@@ -9,8 +9,65 @@ from rest_framework.reverse import reverse
 from django.core.files.storage import default_storage as storage
 from .utils import save_uploaded_file_to_disk
 from django.conf import settings
+from core.common import MyRouter
 from core.common import apirest_response_format
 import logging
+
+
+def routes ():
+    router = MyRouter()
+
+    router.register(r'env_sensor/humidity', HumidityView, base_name='humidity')
+    router.register(r'env_sensor/temperature', TemperatureView,
+                base_name='temperature')
+    router.register(r'env_sensor/temperature_from_humidity', TemperatureFromHumidityView,
+                    base_name='temperature_from_humidity')
+    router.register(r'env_sensor/temperature_from_pressure', TemperatureFromPressureView,
+                    base_name='temperature_from pressure'),
+    router.register(r'env_sensor/pressure', PressureView,
+                    base_name='pressure')
+    router.register(r'led_matrix/rotation', RotationView,
+                    base_name='rotation')
+    router.register(r'led_matrix/flip_h', FlipHView,
+                    base_name='flip_h')
+    router.register(r'led_matrix/flip_v', FlipVView,
+                    base_name='flip_v')
+    router.register(r'led_matrix/pixels', PixelsView,
+                    base_name='pixels')
+    router.register(r'led_matrix/load_image', LoadImageView,
+                    base_name='load_image')
+    router.register(r'led_matrix/clear', ClearView,
+                    base_name='clear')
+    router.register(r'led_matrix/show_message', ShowMessageView,
+                    base_name='show_message')
+    router.register(r'led_matrix/show_letter', ShowLetterView,
+                    base_name='show_letter')
+    router.register(r'led_matrix/low_light', LowLightView,
+                    base_name='low_light')
+    router.register(r'led_matrix/gamma', GammaView,
+                    base_name='gamma')
+    router.register(r'imu_sensor/imu_config', ImuConfigView,
+                    base_name='imu_config')
+    router.register(r'imu_sensor/orientation_radians', OrientationRadiansView,
+                    base_name='orientation_radians')
+    router.register(r'imu_sensor/orientation_degrees', OrientationDegreesView,
+                    base_name='orientation_degrees')
+    router.register(r'imu_sensor/orientation', OrientationDegreesView,
+                    base_name='orientation')
+    router.register(r'imu_sensor/compass', CompassView,
+                    base_name='compass')
+    router.register(r'imu_sensor/compass_raw', CompassRawView,
+                    base_name='compass_raw')
+    router.register(r'imu_sensor/gyroscope', GyroscopeView,
+                    base_name='gyroscope')
+    router.register(r'imu_sensor/gyroscope_raw', GyroscopeRawView,
+                    base_name='gyroscope_raw')
+    router.register(r'imu_sensor/accelerometer', AccelerometerView,
+                    base_name='accelerometer')
+    router.register(r'imu_sensor/accelerometer_raw', AccelerometerRawView,
+                    base_name='accelerometer_raw')
+
+    return router.urls
 
 # Get an instance of a logger
 logger = logging.getLogger("apirest_sensehat")
