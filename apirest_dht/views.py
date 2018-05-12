@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework import viewsets
 #from apirest_sensehat.serializers import *
 from django.conf import settings
+from core.common import MyRouter
 from core.common import apirest_response_format
 from rest_framework.views import APIView
 
@@ -11,6 +12,13 @@ from rest_framework.reverse import reverse
 
 import logging
 
+
+def routes():
+
+    router = MyRouter()
+    router.register(r'env_sensor/humidity', HumidityView, base_name='dht_humidity')
+    router.register(r'env_sensor/temperature', TemperatureView, base_name='dht_temperature')
+    return router.urls
 
 
 
@@ -75,3 +83,5 @@ class TemperatureView(viewsets.ViewSet):
         humidity, temperature = Adafruit_DHT.read_retry(DHT_SENSORS[device], settings.DHT_GPIO_PIN)
         response = apirest_response_format(url=request.path, status="success", msg="Sensor " + device, result=temperature)
         return Response(response)
+
+
