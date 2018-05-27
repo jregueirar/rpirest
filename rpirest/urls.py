@@ -22,10 +22,11 @@ from django.conf import settings
 from django.conf.urls.static import static
 from apirest_dht.views import routes as dht_routes
 from apirest_sensehat.views import routes as sensehat_routes
+from apirest_rpi.views import routes as rpi_routes
 
 
-from rest_framework_docs.views import DRFDocsView
-from django.contrib.auth.decorators import login_required
+# from rest_framework_docs.views import DRFDocsView
+# from django.contrib.auth.decorators import login_required
 
 urlpatterns = [
     url(r'^', include('core.urls')),
@@ -37,4 +38,5 @@ urlpatterns = [
     url(r'^api/v1/dht22/', include(dht_routes()), {'device': "dht22"}),
     url(r'^api/v1/am2302/', include(dht_routes()), {'device': "am2302"}),
     url(r'^api/v1/sensehat/', include(sensehat_routes())),
+    url(r'^api/v1/rpi/', include(rpi_routes())),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
