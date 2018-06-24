@@ -84,6 +84,8 @@ class MessageSerializer(TextCommonSerializer):
     scroll_speed= serializers.FloatField(default=0.1)
 
 
+
+
 class LowLightSerializer(serializers.Serializer):
     low_light = serializers.BooleanField(default=False)
 

@@ -1,11 +1,16 @@
 # Create your views here.
-from rest_framework.response import Response
-from rest_framework import viewsets
-from core.common import MyRouter
-from core.common import apirest_response_format
+import logging
 
 import psutil
-import logging
+from rest_framework import viewsets, status
+from rest_framework.response import Response
+
+from .tasks import play_audio
+from core.common import MyRouter
+from core.common import apirest_response_format
+from .serializers import SoundSerializer
+from celery.result import AsyncResult
+
 
 
 def routes():
@@ -14,6 +19,8 @@ def routes():
     router.register(r'memory', MemoryView, base_name='rpi_memory')
     router.register(r'mountpoints', DiskPartitionView, base_name='rpi_disk_partition')
     router.register(r'mountpoints-usage', DiskUsageView, base_name='rpi_disk_usage')
+    router.register(r'audio', SoundView, base_name='audio')
+    router.register(r'taskinfo',TaskView, base_name='task' )
     return router.urls
 
 # Get an instance of a logger
@@ -29,7 +36,10 @@ class CPUPercentView(viewsets.ViewSet):
     def list(self, request):
 
         data=psutil.cpu_percent(interval=1, percpu=True)
-        response = apirest_response_format(url=request.path, status="success", msg="Percents per CPU", result=data)
+        response = apirest_response_format(url=request.path,
+                                           status="success",
+                                           msg="Percents per CPU",
+                                           result=data)
         return Response(response)
 
 class MemoryView(viewsets.ViewSet):
@@ -71,5 +81,44 @@ class DiskUsageView(viewsets.ViewSet):
             data.append(aux);
         # data=psutil.disk_usage(mount_point)._asdict()
         msgOut="Use of mount points"
-        response = apirest_response_format(url=request.path, status="success", msg=msgOut, result=data)
+        response = apirest_response_format(url=request.path, status="SUCCESS", msg=msgOut, result=data)
         return Response(response)
+
+class SoundView(viewsets.ViewSet):
+    """
+    Reproduce or return a list of sounds.
+    """
+    serializer_class = SoundSerializer
+
+    def update(self, request):
+        serializer = SoundSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            task = play_audio.delay(1, serializer.data['sound_path'])
+            msgOut="Testing"
+            response = apirest_response_format(request.path,
+                                               status=task.status,
+                                               msg=msgOut,
+                                               result="Reproducing audio " + serializer.data['sound_path'],
+                                               jobid=task.id)
+            return Response(response)
+
+
+
+class TaskView(viewsets.ViewSet):
+    """
+    Show the status of one Asyncronous Task.
+    PK = Task Id.
+    """
+    def retrieve(self, request, pk=None):
+        if pk is not None:
+            response = apirest_response_format( request.path,
+                                                status=AsyncResult(pk).status,
+                                                msg="Status of the asyncronous task",
+                                                result=AsyncResult(pk).status,
+                                                jobid=pk,
+                                                )
+            return Response(response)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    # def list(self, request):
+    #     return Response(status=status.HTTP_400_BAD_REQUEST)

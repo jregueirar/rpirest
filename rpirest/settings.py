@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'kronos',
     'apirest_sensehat',
     'apirest_dht',
-    'rest_framework_docs'
+    'rest_framework_docs',
+    'jobs'
 ]
 
 REST_FRAMEWORK = {
@@ -185,6 +186,31 @@ LOGGING = {
         },
     },
 }
+
+###
+# Configuration for Asyncronous Tasks
+###
+CHANNEL_LAYERS = {
+   "default": {
+       "BACKEND": "asgi_redis.RedisChannelLayer",  # use redis backend
+       "CONFIG": {
+           "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],  # set redis address
+       },
+       "ROUTING": "rpirest.routing.channel_routing",  # load routing from our routing.py file
+   },
+}
+
+# Celery settings
+#BROKER_URL = 'redis://localhost:6379/0'  # our redis address
+CELERY_BROKER_URL = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+# use json format for everything
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+
+
+PATH_SOUNDS = os.path.join(BASE_DIR, 'sounds')
 #########################################################################
 #                                                                       #
 #                           LOCAL SETTINGS                              #

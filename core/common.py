@@ -45,9 +45,14 @@ class MyRouter(routers.DefaultRouter):
     ]
 
 
-def apirest_response_format(url, status, msg, result):
+def apirest_response_format(url, status, msg, result, jobid=None):
     response={'url': url}
     response['status'] = status
     response['msg'] = msg
     response['result'] = result
+
+    # Used in asynchronous tasks
+    if jobid:
+        response['jobid'] = jobid
+        response['polling'] = 2
     return response
