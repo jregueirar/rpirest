@@ -20,6 +20,7 @@ from django.conf.urls import url, include
 # Snippet para servir ficheros estáticos en modo debug
 from django.conf import settings
 from django.conf.urls.static import static
+from core.views import routes as core_routes
 from apirest_dht.views import routes as dht_routes
 from apirest_sensehat.views import routes as sensehat_routes
 from apirest_rpi.views import routes as rpi_routes
@@ -34,6 +35,7 @@ urlpatterns = [
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 
     #APIs DRF
+    url(r'^api/v1/core/', include(core_routes())),
     url(r'^api/v1/dht11/', include(dht_routes()), {'device': "dht11"}),
     url(r'^api/v1/dht22/', include(dht_routes()), {'device': "dht22"}),
     url(r'^api/v1/am2302/', include(dht_routes()), {'device': "am2302"}),

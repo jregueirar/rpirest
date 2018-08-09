@@ -1,3 +1,8 @@
+## v0.7 (2018-08- )
+
+- Support for asyncronous tasks with Celery.
+- Resources to check the status of a asynchronous task.
+
 ## v0.6.2(2018-05-12)
 
 - Fixing how to show endpoints in the main page.

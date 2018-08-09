@@ -2,6 +2,15 @@
 
 The Browseable REST API for your Raspberry IOT Projects
 
+## Features
+
+* API Rest browseable and documented
+* APIRest modular, it is easily extending its functions.
+* Support for asyncronous tasks (Long Polling).
+* Massive deployment and configuration control with ansible.
+* Security management, creation and management of API users.
+* Open Source, with widely used technologies.
+
 ## Installation
 * Install Raspbian in a RaspberryPi 2 or 3 with ssh access
 

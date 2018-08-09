@@ -5,12 +5,11 @@ import psutil
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 
-from .tasks import play_audio
+from .tasks import play_audio, sync_job_db
 from core.common import MyRouter
 from core.common import apirest_response_format
+from core.models import Job
 from .serializers import SoundSerializer
-from celery.result import AsyncResult
-
 
 
 def routes():
@@ -19,8 +18,8 @@ def routes():
     router.register(r'memory', MemoryView, base_name='rpi_memory')
     router.register(r'mountpoints', DiskPartitionView, base_name='rpi_disk_partition')
     router.register(r'mountpoints-usage', DiskUsageView, base_name='rpi_disk_usage')
-    router.register(r'audio', SoundView, base_name='audio')
-    router.register(r'taskinfo',TaskView, base_name='task' )
+
+
     return router.urls
 
 # Get an instance of a logger
@@ -36,7 +35,7 @@ class CPUPercentView(viewsets.ViewSet):
     def list(self, request):
 
         data=psutil.cpu_percent(interval=1, percpu=True)
-        response = apirest_response_format(url=request.path,
+        response = apirest_response_format(request=request,
                                            status="success",
                                            msg="Percents per CPU",
                                            result=data)
@@ -51,7 +50,7 @@ class MemoryView(viewsets.ViewSet):
 
         data=psutil.virtual_memory()
         msg_out="Memory Statistics"
-        response = apirest_response_format(url=request.path, status="success", msg=msg_out, result=data._asdict())
+        response = apirest_response_format(request=request, status="success", msg=msg_out, result=data._asdict())
         return Response(response)
 
 class DiskPartitionView(viewsets.ViewSet):
@@ -65,7 +64,7 @@ class DiskPartitionView(viewsets.ViewSet):
         for i in data:
             result.append(i._asdict())
         msgOut="List of all mounted partitions"
-        response = apirest_response_format(url=request.path, status="success", msg=msgOut, result=result)
+        response = apirest_response_format(request=request, status="success", msg=msgOut, result=result)
         return Response(response)
 
 class DiskUsageView(viewsets.ViewSet):
@@ -81,7 +80,7 @@ class DiskUsageView(viewsets.ViewSet):
             data.append(aux);
         # data=psutil.disk_usage(mount_point)._asdict()
         msgOut="Use of mount points"
-        response = apirest_response_format(url=request.path, status="SUCCESS", msg=msgOut, result=data)
+        response = apirest_response_format(request=request, status="SUCCESS", msg=msgOut, result=data)
         return Response(response)
 
 class SoundView(viewsets.ViewSet):
@@ -93,32 +92,22 @@ class SoundView(viewsets.ViewSet):
     def update(self, request):
         serializer = SoundSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            task = play_audio.delay(1, serializer.data['sound_path'])
-            msgOut="Testing"
-            response = apirest_response_format(request.path,
+
+            task = play_audio.delay(serializer.data['sound_path'])
+            job = Job(
+                name="play_audio",
+                celery_id= task.id
+            )
+            job.save()
+            # FIXME sync_job_db
+            #play_audio.apply_async(serializer.data['sound_path'], job.id, link=sync_job_db.s())
+            # (play_audio.s(serializer.data['sound_path'], job.id) | sync_job_db.s(job.id)).delay()
+
+            msg_out="Asyncronous task. play_audio: " + serializer.data['sound_path']
+            response = apirest_response_format(request=request,
                                                status=task.status,
-                                               msg=msgOut,
-                                               result="Reproducing audio " + serializer.data['sound_path'],
-                                               jobid=task.id)
+                                               msg=msg_out,
+                                               result="",
+                                               job_id=job.id,
+                                               )
             return Response(response)
-
-
-
-class TaskView(viewsets.ViewSet):
-    """
-    Show the status of one Asyncronous Task.
-    PK = Task Id.
-    """
-    def retrieve(self, request, pk=None):
-        if pk is not None:
-            response = apirest_response_format( request.path,
-                                                status=AsyncResult(pk).status,
-                                                msg="Status of the asyncronous task",
-                                                result=AsyncResult(pk).status,
-                                                jobid=pk,
-                                                )
-            return Response(response)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    # def list(self, request):
-    #     return Response(status=status.HTTP_400_BAD_REQUEST)

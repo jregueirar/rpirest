@@ -47,7 +47,8 @@ INSTALLED_APPS = [
     'apirest_sensehat',
     'apirest_dht',
     'rest_framework_docs',
-    'jobs'
+    'django_celery_results'
+
 ]
 
 REST_FRAMEWORK = {
@@ -203,7 +204,8 @@ CHANNEL_LAYERS = {
 # Celery settings
 #BROKER_URL = 'redis://localhost:6379/0'  # our redis address
 CELERY_BROKER_URL = 'redis://localhost:6379'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+#CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'django-db'
 # use json format for everything
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'

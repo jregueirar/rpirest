@@ -1,5 +1,7 @@
 from rest_framework import routers
 from rest_framework.routers import Route, DynamicDetailRoute, DynamicListRoute
+from .models import Job
+from celery.result import AsyncResult
 
 # Custom Route for change suffix and mapping
 class MyRouter(routers.DefaultRouter):
@@ -44,15 +46,38 @@ class MyRouter(routers.DefaultRouter):
         ),
     ]
 
+# Syncing info of Job with AsyncResult
+#def sync_job_db(job_id):
 
-def apirest_response_format(url, status, msg, result, jobid=None):
-    response={'url': url}
+#    job = Job.objects.get(pk=job_id)
+#    res = AsyncResult(job.celery_id)
+#    res.result
+#    #job.completed = res._cache['date_done']
+#    job.status = res.status
+#    job.save()
+
+
+def apirest_response_format(request, status, msg, result, job_id=None):
+    response={'url': request.build_absolute_uri()}
     response['status'] = status
     response['msg'] = msg
     response['result'] = result
 
     # Used in asynchronous tasks
-    if jobid:
-        response['jobid'] = jobid
-        response['polling'] = 2
+    if job_id:
+        job = Job.objects.get(pk=job_id)
+        response['asyncronous_task'] = {}
+        response['asyncronous_task']['jobid'] = job.id
+        response['asyncronous_task']['name'] = job.name
+        response['asyncronous_task']['celery_id'] = job.celery_id
+        check_job_url = request.build_absolute_uri('/')[:-1].strip("/") + "/api/v1/core/job/" + str(job_id)
+        response['asyncronous_task']['check_job_url'] = check_job_url
+        response['asyncronous_task']['created'] = job.created
+
+        res = AsyncResult(job.celery_id)
+        response['asyncronous_task']['status'] = res.state
+        if res.state == 'FAILURE' or res.state == 'SUCCESS':
+            res.result
+            response['asyncronous_task']['completed'] = res._cache['date_done']
+
     return response

@@ -5,20 +5,39 @@ from unipath import Path
 import logging
 import time
 
+
+
 logger = logging.getLogger("apirest_rpi")
 
-#BASE_DIR = Path(__file__).parent;
-#ymlconfig = BASE_DIR.child("config.yml")
-#with open(ymlconfig, 'r') as ymlfile:
-#    cfg = yaml.load(ymlfile)
+BASE_DIR = Path(__file__).parent;
+ymlconfig = BASE_DIR.child("config.yml")
+with open(ymlconfig, 'r') as ymlfile:
+    cfg = yaml.load(ymlfile)
+
+# Syncing info of Job with AsyncResult
+@shared_task
+def sync_job_db(job_id):
+
+   job = Job.objects.get(pk=job_id)
+   res = AsyncResult(job.celery_id)
+   res.result
+   #job.completed = res._cache['date_done']
+   job.status = res.status
+   job.save()
 
 @shared_task
-def play_audio(jobid, audiofile):
+def play_audio(audiofile):
     from subprocess import call
 
-    time.sleep(10)
+    #log.debug("job Name=%s", data['job_name'])
+
+    time.sleep(2)
+
     # call(["omxplayer", cfg['sounds_path'] + audiofile])
-    # Change task status to completed
+
+
+    #call(["omxplayer", cfg['sounds_path'] + audiofile])
+    #Change task status to completed
     #job = Job.objects.get(pk=job_id)
     #log.debug("Running job_name=%s", job.name)
 
@@ -36,3 +55,18 @@ def play_audio(jobid, audiofile):
     #             "job_status": job.status,
     #         })
     #     })
+
+    # Save model to our database
+    #job = Job(
+    #    name=data['job_name'],
+    #    status="started",
+    #)
+    #job.save()
+
+    # Start long running task here (using Celery)
+    #sec3_task = sec3.delay(job.id, reply_channel)
+
+    # Store the celery task id into the database if we wanted to
+    # do things like cancel the task in the future
+    #job.celery_id = sec3_task.id
+    #job.save()
