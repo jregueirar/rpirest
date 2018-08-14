@@ -70,7 +70,7 @@ class HumidityView(viewsets.ViewSet):
     def list(self, request, device):
         humidity, temperature = Adafruit_DHT.read_retry(DHT_SENSORS[device], settings.DHT_GPIO_PIN)
         logger.debug('HumidityView: ' + str(humidity))
-        response = apirest_response_format(url=request.path, status="success", msg="Sensor " + device, result=humidity)
+        response = apirest_response_format(request=request, status="success", msg="Sensor " + device, result=humidity)
         return Response(response)
 
 class TemperatureView(viewsets.ViewSet):
@@ -81,7 +81,7 @@ class TemperatureView(viewsets.ViewSet):
     """
     def list(self, request, device):
         humidity, temperature = Adafruit_DHT.read_retry(DHT_SENSORS[device], settings.DHT_GPIO_PIN)
-        response = apirest_response_format(url=request.path, status="success", msg="Sensor " + device, result=temperature)
+        response = apirest_response_format(request=request, status="success", msg="Sensor " + device, result=temperature)
         return Response(response)
 
 

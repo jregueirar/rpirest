@@ -278,7 +278,7 @@ class HumidityView(viewsets.ViewSet):
     """
     def list(self, request):
         result = sense.get_humidity()
-        response = apirest_response_format(request.path, "success", "Humidity (%)", result)
+        response = apirest_response_format(request, "success", "Humidity (%)", result)
         return Response(response)
 
 
@@ -298,7 +298,7 @@ class TemperatureView(viewsets.ViewSet):
 
     def list(self, request):
         result = sense.get_temperature_from_humidity()
-        response = apirest_response_format(request.path, "success", "Temperature in degrees Celsius", result)
+        response = apirest_response_format(request, "success", "Temperature in degrees Celsius", result)
         logger.debug('TemperatureView: ' + str(result))
         return Response(response)
 
@@ -322,7 +322,7 @@ class TemperatureFromPressureView(viewsets.ViewSet):
 
     def list(self, request):
         result = sense.get_temperature_from_pressure()
-        response = apirest_response_format(request.path, "success", "Temperature in degrees Celsius", result)
+        response = apirest_response_format(request, "success", "Temperature in degrees Celsius", result)
         return Response(response)
 
 
@@ -335,7 +335,7 @@ class PressureView(viewsets.ViewSet):
 
     def list(self, request):
         result = sense.get_pressure()
-        response=apirest_response_format(request.path, "success", "Pressure", result)
+        response=apirest_response_format(request, "success", "Pressure", result)
         return Response(response)
 
 
