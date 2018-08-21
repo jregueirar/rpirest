@@ -24,6 +24,7 @@ from core.views import routes as core_routes
 from apirest_dht.views import routes as dht_routes
 from apirest_sensehat.views import routes as sensehat_routes
 from apirest_rpi.views import routes as rpi_routes
+from apirest_mpd.views import routes as mpd_routes
 
 
 # from rest_framework_docs.views import DRFDocsView
@@ -36,9 +37,10 @@ urlpatterns = [
 
     #APIs DRF
     url(r'^api/v1/core/', include(core_routes())),
+    url(r'^api/v2/core/', include(rpi_routes())),
     url(r'^api/v1/dht11/', include(dht_routes()), {'device': "dht11"}),
     url(r'^api/v1/dht22/', include(dht_routes()), {'device': "dht22"}),
     url(r'^api/v1/am2302/', include(dht_routes()), {'device': "am2302"}),
     url(r'^api/v1/sensehat/', include(sensehat_routes())),
-    url(r'^api/v1/rpi/', include(rpi_routes())),
+    url(r'^api/v1/mpd/', include(mpd_routes())),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

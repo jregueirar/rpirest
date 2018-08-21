@@ -57,11 +57,20 @@ class MyRouter(routers.DefaultRouter):
 #    job.save()
 
 
-def apirest_response_format(request, status, msg, result, job_id=None):
+def apirest_response_format(request, status, msg, result, job_id=None, next_action=None, ws=None):
+    api_root = "/api/v1/"
     response={'url': request.build_absolute_uri()}
     response['status'] = status
     response['msg'] = msg
     response['result'] = result
+
+    if next_action:
+        response['suggested_next_action'] = request.build_absolute_uri('/')[:-1].strip("/") + \
+                                            api_root + \
+                                            next_action
+
+    if ws:
+        response['api_websockect'] = True
 
     # Used in asynchronous tasks
     if job_id:
