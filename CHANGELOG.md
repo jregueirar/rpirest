@@ -1,3 +1,8 @@
+## v0.7.1 (2018-08-22)
+
+  API REST for audio reproducing, it is a very simple API REST for MPD (Music player DAEMON). If you want a good web player for you RPI REST, take a look at the project: https://github.com/notandy/ympd
+  At the moment, the API is useful if you want to reproduce some sound, alarm or advice.
+
 ## v0.7 (2018-08- )
 
 - Support for asyncronous tasks with Celery.
